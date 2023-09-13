@@ -36,6 +36,8 @@ public class TutorialWindow : EditorWindow
         isDropdownButton();
         //------------------------Slider/IntSlider
         isSlider();
+        //------------------------LabelField /SelectableLabel 
+        isLabelorSelectable();
     }
     
     
@@ -106,10 +108,10 @@ public class TutorialWindow : EditorWindow
     private string str;
     void isDelayedValueTypeField()
     {
-         i = EditorGUILayout.DelayedIntField("整数域", i);
-                f = EditorGUILayout.DelayedFloatField("单精度浮点域", f);
-                d = EditorGUILayout.DelayedDoubleField("双精度浮点域", d);
-                str = EditorGUILayout.DelayedTextField("字符串域", str);
+        i = EditorGUILayout.DelayedIntField("整数域", i);
+        f = EditorGUILayout.DelayedFloatField("单精度浮点域", f);
+        d = EditorGUILayout.DelayedDoubleField("双精度浮点域", d);
+        str = EditorGUILayout.DelayedTextField("字符串域", str);
     }
     
     //------------------------ColorField and CurveField
@@ -190,11 +192,11 @@ public class TutorialWindow : EditorWindow
     };
     WorkDay workDayMask;
     int Daymask;
-        void isEnumFlagsField (){workDayMask = (WorkDay)EditorGUILayout.EnumFlagsField("EnumFlagsField", workDayMask);
-            Daymask = (int)workDayMask;//虽然接收是用Enum，但二进制掩码应当转成int使用
-            //Debug.Log(Daymask);
+    void isEnumFlagsField (){workDayMask = (WorkDay)EditorGUILayout.EnumFlagsField("EnumFlagsField", workDayMask);
+        Daymask = (int)workDayMask;//虽然接收是用Enum，但二进制掩码应当转成int使用
+        //Debug.Log(Daymask);
             
-        }
+    }
     //------------------------DropdownButtonDropdownButton 
     void isDropdownButton()
     {
@@ -240,5 +242,21 @@ public class TutorialWindow : EditorWindow
         //这里如果用户 Focus On，Focus Out 或是 摁下Enter之前，滑动条的控制将失效
         maxValue = EditorGUILayout.DelayedFloatField("区间右端：", maxValue);
     }
-}
+    
+    //------------------------LabelField /SelectableLabel 
+    void isLabelorSelectable(){
+        //文本标题 - 文本内容
+        EditorGUILayout.LabelField("Hello","World!");
+        //不能加标题
+        EditorGUILayout.SelectableLabel("可以复制的文本"); 
+             
+        EditorGUILayout.HelpBox("一般的提示，LabelField加一个Box", MessageType.None);
 
+        EditorGUILayout.HelpBox("带Info气泡Icon 的提示/消息", MessageType.Info);
+
+        EditorGUILayout.HelpBox("带Warning气泡Icon 的警告/警示", MessageType.Warning);
+
+        EditorGUILayout.HelpBox("带Error气泡Icon 的错误提示", MessageType.Error);
+    }
+     
+}
