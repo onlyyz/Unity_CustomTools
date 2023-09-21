@@ -25,17 +25,21 @@ public class TutorialWindow : EditorWindow
         // ------------------------DelayedValueTypeField
         // isDelayedValueTypeField();
         //------------------------ColorField and CurveField
-        isColororCurve();
+        // isColororCurve();
         //------------------------Popup/IntPopup/EnumPopup
-        isPopuporIntPopuporEnumPopup();
+        // isPopuporIntPopuporEnumPopup();
         //------------------------MaskField 
-        isMaskField();
+        // isMaskField();
         //------------------------EnumFlagsField 
-        isEnumFlagsField();
+        // isEnumFlagsField();
         //------------------------DropdownButtonDropdownButton 
-        isDropdownButton();
+        // isDropdownButton();
         //------------------------Slider/IntSlider
-        isSlider();
+        // isSlider();
+        //6.6-6.7-----------------------toggle/toggleLeft
+        // isToggleOrLabelField();
+        //6.8.2------------------------ToggleGroup
+        isToggleGroup();
     }
     
     
@@ -226,7 +230,7 @@ public class TutorialWindow : EditorWindow
         //通过Label来展示数值
         EditorGUILayout.LabelField("Float Value：",sliderValue.ToString()); 
         sliderValue = EditorGUILayout.Slider("Float Slider", sliderValue,0,100);
-//通过Label来展示数值
+        //通过Label来展示数值
         EditorGUILayout.LabelField("Int Value：",intSliderValue.ToString()); 
         intSliderValue = EditorGUILayout.IntSlider("Int Slider", intSliderValue, 0, 100);
 
@@ -240,5 +244,207 @@ public class TutorialWindow : EditorWindow
         //这里如果用户 Focus On，Focus Out 或是 摁下Enter之前，滑动条的控制将失效
         maxValue = EditorGUILayout.DelayedFloatField("区间右端：", maxValue);
     }
+
+    
+    //6.6 - 6.8------------------------toggle/toggleLeft
+    bool toggle;
+    bool toggleLeft;
+    
+    //6.8
+    private Vector2 svroot;
+    private float f68;
+    void isToggleOrLabelField()
+    {
+        toggle = EditorGUILayout.Toggle("标题在左 Toggle在右", toggle);
+        toggleLeft = EditorGUILayout.ToggleLeft("Toggle在左 标题在右", toggleLeft);
+        
+        //6.7
+        EditorGUILayout.LabelField("Hello","World!");
+        
+        //6.7.3
+        EditorGUILayout.HelpBox("一般的提示，LabelField加一个Box", MessageType.None);
+        EditorGUILayout.HelpBox("带Info气泡Icon 的提示/消息", MessageType.Info);
+        EditorGUILayout.HelpBox("带Warning气泡Icon 的警告/警示", MessageType.Warning);
+        EditorGUILayout.HelpBox("带Error气泡Icon 的错误提示", MessageType.Error);
+        
+        
+   
+        
+        //6.8.1
+        GUILayout.BeginArea(new Rect(0, 450, 300, 200)); //注意顺序 先开Area 再开ScrollView
+        
+        svroot = GUILayout.BeginScrollView(svroot);//这样ScrollView才是基于Area展开，而不是整个窗口
+
+        
+        GUILayout.Box("AAA");
+        GUILayout.Box("BBB");
+        GUILayout.Box("CCC");
+        GUILayout.Box("AAA");
+        GUILayout.Box("BBB");
+        GUILayout.Box("CCC");
+        GUILayout.Box("AAA");
+        GUILayout.Box("BBB");
+        GUILayout.Box("CCC");
+        GUILayout.Box("AAA");
+        GUILayout.Box("BBB");
+        GUILayout.Box("CCC");
+        GUILayout.Box("AAA");
+        GUILayout.Box("BBB");
+        GUILayout.Box("CCC");
+        GUILayout.Box("AAA");
+        GUILayout.Box("BBB");
+        GUILayout.Box("CCC");
+
+        f68 = EditorGUILayout.FloatField("浮点Field：", f);//GUILayout布局 影响 EditorGUILayout控件
+
+        GUILayout.EndScrollView();
+        GUILayout.EndArea();
+
+
+        //上下两个测例，证明了 GUILayout 布局 和 EditorLayout 布局 ，能够互相影响各自 Layout 出的控件
+        //只是我们不能使用 EditorLayout.ScrollVeiw + GUILayout.Area 这种组合
+
+
+        EditorGUILayout.BeginHorizontal();
+        //////////
+        EditorGUILayout.BeginVertical();
+
+        GUILayout.Box("1");
+
+        GUILayout.Box("2");//EditorGUILaoyt布局 影响 GUILayout控件
+
+        GUILayout.Box("3");
+
+        EditorGUILayout.EndVertical();
+        ///////////////
+        EditorGUILayout.BeginVertical();
+
+        GUILayout.Box("4");
+
+        GUILayout.Box("5");
+
+        GUILayout.Box("6");
+
+
+        EditorGUILayout.EndVertical();
+        //////////////
+        EditorGUILayout.BeginVertical();
+
+        GUILayout.Box("7");
+
+        GUILayout.Box("8");
+
+        GUILayout.Box("9");
+
+
+        EditorGUILayout.EndVertical();
+        //////////////
+        EditorGUILayout.EndHorizontal();
+
+    }
+    
+    private bool isGroupActive;
+    private bool anotherToggle;
+    private float f82;
+    
+    
+    //6.8.2------------------------ToggleGroup
+    
+    private bool isFoldOut;
+    private bool isFoldGroupOut;
+    
+    
+    float feadValue;
+
+    void isToggleGroup()
+    {
+        isGroupActive = EditorGUILayout.BeginToggleGroup(" Toggle Group ",isGroupActive);
+
+        EditorGUILayout.LabelField("HelloWorld!");
+        GUILayout.Box("11111");
+        anotherToggle = GUILayout.Toggle(anotherToggle, "另一个toggle");
+        if (GUILayout.Button("Hello", GUILayout.MaxWidth(200)))
+            Debug.Log("HelloWrold!");
+        f82 = EditorGUILayout.FloatField("float数值：", f);
+
+        EditorGUILayout.EndToggleGroup();
+        
+        
+        
+        //6.8.3
+        
+        //这里Title和Value需要反过来，Unity 2021中没有重载第一参数为 string title 的方法
+        isFoldGroupOut = EditorGUILayout.BeginFoldoutHeaderGroup(isFoldGroupOut, "FoldoutHeaderGroup 折叠栏 - Inspector中组件就使用这种");
+
+        if (isFoldGroupOut) {
+            GUILayout.Box("FoldoutHeaderGroup 折叠的内容");
+            GUILayout.Box("FoldoutHeaderGroup 折叠的内容");
+            GUILayout.Box("FoldoutHeaderGroup 折叠的内容");
+
+            isFoldOut = EditorGUILayout.Foldout(isFoldOut, "Fold 折叠栏 - Inspector组件中字段使用这种");
+
+            if (isFoldOut) {
+                GUILayout.Box("FoldOut 折叠的内容");
+                GUILayout.Box("FoldOut 折叠的内容");
+                GUILayout.Box("FoldOut 折叠的内容");
+            }
+            //Foldout 代码简单，但用起来麻烦，必须点中左端的小三角
+
+        }
+
+        EditorGUILayout.EndFoldoutHeaderGroup();
+        //Foldout 代码麻烦，但用起来简单，有一整个横条Box作为点击的区域
+
+        
+        EditorGUILayout.LabelField("feadValue：", feadValue.ToString());
+
+        
+        //6.8.4
+        feadValue = EditorGUILayout.Slider(feadValue, 0, 1);
+
+        //如果 Fold 写成这样就会固定展开，但 FadeGroup 反而要这么写
+        //因为【FadeGroup】不控制 【feadValue】，反而是 【feadValue】 控制 【FadeGroup】
+        if (EditorGUILayout.BeginFadeGroup(feadValue)) {
+            GUILayout.Box("InFeadGrop");
+            GUILayout.Box("InFeadGrop");
+            GUILayout.Box("InFeadGrop");
+        }
+
+        EditorGUILayout.EndFadeGroup();
+        GUILayout.Box("OutFeadGrop");
+        GUILayout.Box("OutFeadGrop");
+        GUILayout.Box("OutFeadGrop");
+
+        
+        var selectedBuildTargetGroup = EditorGUILayout.BeginBuildTargetSelectionGrouping();
+
+        if(selectedBuildTargetGroup == BuildTargetGroup.Android) {
+            EditorGUILayout.LabelField("这里是Android的配置拓展");
+            if (GUILayout.Button("Android 配置"))
+                Debug.Log("Hello Android!");
+        }
+
+        if(selectedBuildTargetGroup==BuildTargetGroup.iOS) {
+            EditorGUILayout.LabelField("这里是IOS的配置拓展");
+            if (GUILayout.Button("IOS 配置"))
+                Debug.Log("Hello IOS!");
+        }
+
+        if (selectedBuildTargetGroup == BuildTargetGroup.Standalone) {
+            EditorGUILayout.LabelField("这里是 Standalone - PC (Windows, Mac, Linux)的配置拓展");
+            if (GUILayout.Button("PC 配置"))
+                Debug.Log("Hello PC!");
+        }
+
+        if (selectedBuildTargetGroup == BuildTargetGroup.PS5) {  //除非我们装了PS5的打包工具，否则不会因为写了这个而显示出PS5的选卡
+            EditorGUILayout.LabelField("这里是 PS5 的配置拓展");
+            if (GUILayout.Button("PS5 配置"))
+                Debug.Log("Hello PS5!");
+        }
+
+        EditorGUILayout.EndBuildTargetSelectionGrouping();
+        
+    }
+    
 }
 

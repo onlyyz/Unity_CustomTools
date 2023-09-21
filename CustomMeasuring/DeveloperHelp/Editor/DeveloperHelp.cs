@@ -33,9 +33,7 @@ public class DeveloperHelp
         sceneScaleTool.yAxis = true;
         sceneScaleTool.zAxis = true;
         sceneScaleTool.showScale = false;
-        sceneScaleTool.sizeType = DistanceType.Meter;
-
-        sceneScaleTool.scalingObject = obj2.transform;
+        sceneScaleTool.sizeType = DistanceType.MeterPoint;
 
         sceneScaleTool.scaleObjectScaleColor = Color.white;
         
