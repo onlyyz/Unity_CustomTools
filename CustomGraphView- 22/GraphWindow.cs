@@ -21,12 +21,17 @@ namespace MU5Editor.NodeEditor
         //ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
         void OnEnable()
         {
+            //工具栏
             Toolbar toolbar = new Toolbar();
             toolbar.style.flexDirection = FlexDirection.Row;
+            
+            //文件路径
             objectField = new ObjectField();
             objectField.objectType = typeof(ScenarioData);
             Button loadBtn = new Button(LoadData) { text = "加載" };
             Button saveBtn = new Button(SaveData) { text = "保存" };
+            
+            
             toolbar.Add(objectField);
             toolbar.Add(loadBtn);
             toolbar.Add(saveBtn);

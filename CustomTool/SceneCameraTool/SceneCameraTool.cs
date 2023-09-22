@@ -36,7 +36,7 @@ public class SceneCameraTool : EditorWindow
     }
 
     
-    [MenuItem("Tool/SceneView Cam Tool")]
+    [MenuItem("Tool/Cam/SceneView Cam Tool")]
     static void Init()
     {
         SceneCameraTool window = (SceneCameraTool)EditorWindow.GetWindow(typeof(SceneCameraTool), false, "Cam Tool");
