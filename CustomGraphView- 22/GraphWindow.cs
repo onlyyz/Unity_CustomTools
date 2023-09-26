@@ -38,7 +38,7 @@ namespace MU5Editor.NodeEditor
             rootVisualElement.Add(toolbar);
 
             
-            
+            //Graph View
             graphView = new MyGraphView(this)
             {
                 style = { flexGrow = 1 }
@@ -46,6 +46,8 @@ namespace MU5Editor.NodeEditor
             rootVisualElement.Add(graphView);
         }
 
+        #region Save Data
+        
         void LoadData()
         {
             if (scenarioData == null) return;
@@ -116,5 +118,7 @@ namespace MU5Editor.NodeEditor
             };
             scenarioData.edgeData_list.Add(edgeData);
         }
+        
+        #endregion
     }
 }

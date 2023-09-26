@@ -42,7 +42,7 @@ public class ScriptGraphView : GraphView
         
     }
     
-    //获取与给定端口兼容的所有端口。
+    //获取与给定端口兼容的所有端口。连接规则
     public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
     {
         //兼容端口

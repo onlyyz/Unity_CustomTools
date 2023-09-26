@@ -19,10 +19,12 @@ namespace MU5Editor.NodeEditor
 
             Insert(0, new GridBackground());
 
+            //增加控制器
             this.AddManipulator(new SelectionDragger());
-            this.AddManipulator(new ContentDragger());
+            this.AddManipulator(new ContentDragger()); 
             this.AddManipulator(new RectangleSelector());
-
+            
+            //搜索树结构
             SearchWindowProvider searchWindowProvider = ScriptableObject.CreateInstance(typeof(SearchWindowProvider)) as SearchWindowProvider;
             searchWindowProvider.Initialize(this, graphWindow);
 
@@ -31,6 +33,7 @@ namespace MU5Editor.NodeEditor
                 SearchWindow.Open(new SearchWindowContext(context.screenMousePosition), searchWindowProvider);
             };
 
+            //创建节点
             CreateBasicNodes();
         }
 
@@ -46,6 +49,7 @@ namespace MU5Editor.NodeEditor
             AddElement(exitNode);
         }
 
+        //端点判断，Edge 是否 不符合条件
         public override List<Port> GetCompatiblePorts(Port startAnchor, NodeAdapter nodeAdapter)
         {
             var compatiblePorts = new List<Port>();
@@ -71,6 +75,9 @@ namespace MU5Editor.NodeEditor
             }
         }
 
+        #region Load Data
+
+        //加载节点数据
         public void LoadNodeData(NodeData nodeData)
         {
             MU5Node node = (MU5Node)Activator.CreateInstance(nodeData.nodeType);
@@ -78,9 +85,11 @@ namespace MU5Editor.NodeEditor
             AddElement(node);
         }
 
+        //加载链接数据
         public void LoadEdgeData(EdgeData edgeData)
         {
             Edge edge = new Edge();
+            
             MU5Node outputNode = GetMU5NodeByUid(edgeData.uid_outputNode);
             MU5Node inputNode = GetMU5NodeByUid(edgeData.uid_inputNode);
 
@@ -106,5 +115,7 @@ namespace MU5Editor.NodeEditor
             }
             return node;
         }
+        
+        #endregion
     }
 }

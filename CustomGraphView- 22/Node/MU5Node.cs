@@ -1,7 +1,7 @@
+using System;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UIElements;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine.UIElements;
 
 
 namespace MU5Editor.NodeEditor
@@ -18,7 +18,8 @@ namespace MU5Editor.NodeEditor
         {
             if (uid != string.Empty) return;
 
-            uid = MU5Utility.GenerateUID();
+            // uid = MU5Utility.GenerateUID();
+            uid = Guid.NewGuid().ToString();
             viewDataKey = uid;
         }
 

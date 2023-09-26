@@ -17,6 +17,7 @@ namespace MU5Editor.NodeEditor
             this.graphWindow = graphWindow;
         }
 
+        //Search Tree Entry
         List<SearchTreeEntry> ISearchWindowProvider.CreateSearchTree(SearchWindowContext context)
         {
             var entries = new List<SearchTreeEntry>();
@@ -29,7 +30,12 @@ namespace MU5Editor.NodeEditor
                     if (type.IsClass && !type.IsAbstract && (type.IsSubclassOf(typeof(MU5Node)))
                         && type != typeof(EntryNode) && type != typeof(ExitNode))
                     {
-                        entries.Add(new SearchTreeEntry(new GUIContent(type.Name)) { level = 1, userData = type });
+                        
+                        
+                        entries.Add(new SearchTreeEntry(new GUIContent(type.Name))
+                        {
+                            level = 1, userData = type
+                        });
                     }
                 }
             }
