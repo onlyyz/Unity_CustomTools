@@ -20,7 +20,7 @@ public class ScriptGraphView : GraphView
         this.AddManipulator(new RectangleSelector());
          
         //  读取 uss 文件并将其添加到样式中
-        this.styleSheets.Add(Resources.Load<StyleSheet>("20-GraphView/Uss/GraphViewBackGround"));
+        this.styleSheets.Add(Resources.Load<StyleSheet>("GraphViewBackGround"));
 
         //  在图层最底层添加背景
         this.Insert(0, new GridBackground());

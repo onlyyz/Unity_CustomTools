@@ -25,15 +25,14 @@ public class DialogueGraphView : GraphView
         var grid = new GridBackground();
         Insert(0, grid);
         
-        //  读取 uss 文件并将其添加到样式中
-        // this.styleSheets.Add(Resources.Load<StyleSheet>("20-GraphView/Uss/GraphViewBackGround"));
-        //  在图层最底层添加背景
-        // this.Insert(0, new GridBackground());
-        
         //添加到Graph View 基类
         AddElement(GenerateEntryPointNode());
     }
 
+    
+    
+    
+    
     //节点连接兼容问题，获取与给定端口兼容的所有端口
     public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
     {
@@ -120,17 +119,47 @@ public class DialogueGraphView : GraphView
         return dialogueNode;
     }
 
-    private void AddchoicePort(DialogueNode dialogueNode)
+    public void AddchoicePort(DialogueNode dialogueNode, string overriddenPortName ="")
     {
         //port 
-        var GeneratedPort = GeneratePort(dialogueNode, Direction.Output);
+        var generatedPort = GeneratePort(dialogueNode, Direction.Output);
         
         //搜索端口名称指定为选择端口计数
         var outputPortCount = dialogueNode.outputContainer.Query("connector").ToList().Count;
-        GeneratedPort.portName = $"choice {outputPortCount}";
+        // generatedPort.portName = $"Choice{outputPortCount}";
+
+        var choicePortName = string.IsNullOrEmpty(overriddenPortName)
+            ? $"choice {outputPortCount}"
+            :overriddenPortName;
         
-        dialogueNode.outputContainer.Add(GeneratedPort);
+        //添加文本
+        var textField = new TextField
+        {
+            name = string.Empty,
+            value = "1"
+        };
+        textField.RegisterValueChangedCallback(evt => generatedPort.portName = evt.newValue);
+        //空隙
+        generatedPort.contentContainer.Add(new Label(" "));
+        generatedPort.contentContainer.Add(textField);
+        
+        var deleteButton = new Button(() => RemovePort(dialogueNode, generatedPort))
+        {
+            text = "X"
+        };
+        generatedPort.contentContainer.Add(deleteButton);
+        
+        
+        generatedPort.portName = choicePortName;
+        
+        dialogueNode.outputContainer.Add(generatedPort);
         dialogueNode.RefreshPorts();
         dialogueNode.RefreshExpandedState();
+    }
+
+
+    private void RemovePort(DialogueNode dialogueNode,Port GeneratedPort)
+    {
+        
     }
 }
