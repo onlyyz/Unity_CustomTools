@@ -11,7 +11,7 @@ namespace MU5Editor.NodeEditor
     {
         MyGraphView graphView;
         ObjectField objectField;
-        public ScenarioData scenarioData { get { return (ScenarioData)objectField.value; } }
+        public SerializeData scenarioData { get { return (SerializeData)objectField.value; } }
         //ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー 
         [MenuItem("Tool/22-ScriptGraph")]
         public static void Open()
@@ -27,7 +27,7 @@ namespace MU5Editor.NodeEditor
             
             //文件路径
             objectField = new ObjectField();
-            objectField.objectType = typeof(ScenarioData);
+            objectField.objectType = typeof(SerializeData);
             Button loadBtn = new Button(LoadData) { text = "加載" };
             Button saveBtn = new Button(SaveData) { text = "保存" };
             

@@ -7,7 +7,7 @@ using UnityEditor.Experimental.GraphView;
 namespace MU5Editor.NodeEditor
 {
     [CreateAssetMenu(menuName = "22-Dia/SerializeData")]
-    public class ScenarioData : ScriptableObject
+    public class SerializeData : ScriptableObject
     {
         public List<NodeData> nodeData_list;
         public List<EdgeData> edgeData_list;

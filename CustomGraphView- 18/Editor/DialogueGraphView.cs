@@ -126,7 +126,7 @@ public class DialogueGraphView : GraphView
         
         //搜索端口名称指定为选择端口计数
         var outputPortCount = dialogueNode.outputContainer.Query("connector").ToList().Count;
-        // generatedPort.portName = $"Choice{outputPortCount}";
+        generatedPort.portName = $"Choice{outputPortCount}";
 
         var choicePortName = string.IsNullOrEmpty(overriddenPortName)
             ? $"choice {outputPortCount}"
@@ -136,12 +136,12 @@ public class DialogueGraphView : GraphView
         var textField = new TextField
         {
             name = string.Empty,
-            value = "1"
+            value = choicePortName
         };
         textField.RegisterValueChangedCallback(evt => generatedPort.portName = evt.newValue);
         //空隙
         generatedPort.contentContainer.Add(new Label(" "));
-        generatedPort.contentContainer.Add(textField);
+        // generatedPort.contentContainer.Add(textField);
         
         var deleteButton = new Button(() => RemovePort(dialogueNode, generatedPort))
         {
