@@ -50,7 +50,7 @@ public class GraphSaveUtility
       }
 
       //Node Data Nodes Data
-      foreach (var dialogueNode in Nodes.Where(node=>!node.Entrybool))
+      foreach (var dialogueNode in Nodes.Where(node=>!node.EntryPoint))
       {
          //传递到容器中
          dialogueContainer.DialogueNodeData.Add(new DialogueNodeData
@@ -93,11 +93,11 @@ public class GraphSaveUtility
    private void ClearGraph()
    {
       //set Entry points guid back from the save . Discard existing guid.
-      Nodes.Find(x => x.Entrybool).GUID = _ContainerCache.Nodelinks[0].BaseNodeGuid;
+      Nodes.Find(x => x.EntryPoint).GUID = _ContainerCache.Nodelinks[0].BaseNodeGuid;
 
       foreach (var node in Nodes)
       {
-         if(node.Entrybool) return;
+         if(node.EntryPoint) return;
          
          //Remove edges that connected to this node;
          Edges.Where(x => x.input.node == node).ToList().

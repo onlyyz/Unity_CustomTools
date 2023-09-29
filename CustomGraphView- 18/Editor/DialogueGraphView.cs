@@ -58,7 +58,7 @@ public class DialogueGraphView : GraphView
         return node.InstantiatePort(Orientation.Horizontal, portDirection, capacity, typeof(float));
     }
     
-    //生成Node
+    //生成 初始 入口Node
     private DialogueNode GenerateEntryPointNode()
     {
         var node = new DialogueNode()
@@ -66,7 +66,7 @@ public class DialogueGraphView : GraphView
                 title = "start",
                 GUID = Guid.NewGuid().ToString(),
                 DialogueText = "ENTRYPOINT",
-                // EntryPoint = true
+                EntryPoint = true
         };
 
         var generatedPort = GeneratePort(node, Direction.Output);
@@ -81,14 +81,12 @@ public class DialogueGraphView : GraphView
         return node;
     }
 
+    
     //添加节点到Graph view ，同时创建node
     public void CreateNode(String nodeName)
     {
         AddElement(CreateDialogueNode(nodeName));
     }
-
-    
-    
     //没有加入Graph view
     public DialogueNode CreateDialogueNode(String nodeName)
     {
@@ -103,7 +101,7 @@ public class DialogueGraphView : GraphView
         //Port the input and output
         var inputPort =  GeneratePort(dialogueNode, Direction.Input,Port.Capacity.Multi);
         inputPort.portName = "Input";
-        dialogueNode.outputContainer.Add(inputPort);
+        dialogueNode.inputContainer.Add(inputPort);
 
         //输出port的数量
         var button = new Button(() => {  AddchoicePort(dialogueNode); });
@@ -119,7 +117,7 @@ public class DialogueGraphView : GraphView
         return dialogueNode;
     }
 
-    public void AddchoicePort(DialogueNode dialogueNode, string overriddenPortName ="")
+    public void AddchoicePort(DialogueNode dialogueNode, string overriddenPortName ="") 
     {
         //port 
         var generatedPort = GeneratePort(dialogueNode, Direction.Output);
@@ -132,16 +130,21 @@ public class DialogueGraphView : GraphView
             ? $"choice {outputPortCount}"
             :overriddenPortName;
         
+        //TODO:Bug
+        
+        
         //添加文本
         var textField = new TextField
         {
+            
+            maxLength = 2,
             name = string.Empty,
             value = choicePortName
         };
         textField.RegisterValueChangedCallback(evt => generatedPort.portName = evt.newValue);
         //空隙
         generatedPort.contentContainer.Add(new Label(" "));
-        // generatedPort.contentContainer.Add(textField);
+        generatedPort.contentContainer.Add(textField);
         
         var deleteButton = new Button(() => RemovePort(dialogueNode, generatedPort))
         {
@@ -151,7 +154,6 @@ public class DialogueGraphView : GraphView
         
         
         generatedPort.portName = choicePortName;
-        
         dialogueNode.outputContainer.Add(generatedPort);
         dialogueNode.RefreshPorts();
         dialogueNode.RefreshExpandedState();

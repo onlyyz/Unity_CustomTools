@@ -5,5 +5,5 @@ public class DialogueNode : Node
 {
     public string GUID;
     public String DialogueText;
-    public bool Entrybool = false;
+    public bool EntryPoint = false;
 }

@@ -10,8 +10,6 @@ public class DialogueGraph : EditorWindow
     private DialogueGraphView _graphView;
     private string _fileName = "New Narrative";
     
-    
-    
     [MenuItem("Tool/18-Dialogue")]
     public static void OpenDialogueGraphWindow()
     {
@@ -44,9 +42,7 @@ public class DialogueGraph : EditorWindow
             
         toolbar.Add(new Button( ()=>RequestDataOperation(true)){text = "Save Data"});
         toolbar.Add(new Button( ()=>RequestDataOperation(false)){text = "Load Data"}); 
-            
-            
-            
+        
         
         //Create Button
         var nodeCreateButton = new Button(() =>
@@ -90,19 +86,10 @@ public class DialogueGraph : EditorWindow
       
         //Graph View填满窗口 
         _graphView.StretchToParentSize();
-      
         rootVisualElement.Add(_graphView);
-
     }
-
-
-    
-    
     private void OnDisable()
     {
         rootVisualElement.Remove(_graphView);
     }
-
-
-   
 }

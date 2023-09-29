@@ -1,8 +1,6 @@
 using System;
 using UnityEngine;
 // using System.Numerics;
-
-
 [Serializable]
 public class DialogueNodeData
 {
