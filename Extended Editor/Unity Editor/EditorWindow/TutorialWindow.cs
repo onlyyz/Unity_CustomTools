@@ -17,11 +17,11 @@ public class TutorialWindow : EditorWindow
     
    
     private void OnGUI() {
-        obj = EditorGUILayout.ObjectField("带刚体的GameObj的序列化", obj, typeof(GameObject),true) as GameObject;
+        // obj = EditorGUILayout.ObjectField("带刚体的GameObj的序列化", obj, typeof(GameObject),true) as GameObject;
     
         
         // ------------------------ValueTypeField
-        // isValueTypeField();
+        isValueTypeField();
         // ------------------------DelayedValueTypeField
         // isDelayedValueTypeField();
         //------------------------ColorField and CurveField
@@ -39,7 +39,7 @@ public class TutorialWindow : EditorWindow
         //6.6-6.7-----------------------toggle/toggleLeft
         // isToggleOrLabelField();
         //6.8.2------------------------ToggleGroup
-        isToggleGroup();
+        // isToggleGroup();
     }
     
     

@@ -9,11 +9,13 @@ namespace MU5Editor.NodeEditor
     public class MU5Node : Node
     {
         public string uid = string.Empty;
+        //字典 string check Port
         public Dictionary<string, Port> port_dict;
 
         public Label uidLabel = new Label();
 
         //<Methods>ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+       
         public void Init_UID()
         {
             if (uid != string.Empty) return;

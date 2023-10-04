@@ -33,11 +33,13 @@ namespace MU5Editor.NodeEditor
                 SearchWindow.Open(new SearchWindowContext(context.screenMousePosition), searchWindowProvider);
             };
 
+            //TODO:利用域获取所有的Node
             //创建节点
             CreateBasicNodes();
         }
 
         //ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+        //Base Node
         public void CreateBasicNodes()
         {
             entryNode = new EntryNode();
@@ -75,12 +77,17 @@ namespace MU5Editor.NodeEditor
             }
         }
 
+        
+        
         #region Load Data
 
-        //加载节点数据
+        //加载 node 数据
         public void LoadNodeData(NodeData nodeData)
         {
+            //返回符合参数的构造函数所创建的实例
             MU5Node node = (MU5Node)Activator.CreateInstance(nodeData.nodeType);
+            
+            //传递数据 到 node 中
             node.LoadData(nodeData);
             AddElement(node);
         }
@@ -90,14 +97,18 @@ namespace MU5Editor.NodeEditor
         {
             Edge edge = new Edge();
             
+            //UID
             MU5Node outputNode = GetMU5NodeByUid(edgeData.uid_outputNode);
             MU5Node inputNode = GetMU5NodeByUid(edgeData.uid_inputNode);
 
+            
+            //创建链接
             edge.output = outputNode.port_dict[edgeData.uid_outputPort];
             outputNode.port_dict[edgeData.uid_outputPort].Connect(edge);
             edge.input = inputNode.port_dict[edgeData.uid_inputPort];
             inputNode.port_dict[edgeData.uid_inputPort].Connect(edge);
 
+            
             AddElement(edge);
         }
 
