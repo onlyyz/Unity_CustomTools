@@ -10,6 +10,7 @@ namespace MU5Editor.NodeEditor
     {
         public string uid = string.Empty;
         //字典 string check Port
+        //分离数据
         public Dictionary<string, Port> port_dict;
 
         public Label uidLabel = new Label();

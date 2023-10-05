@@ -97,7 +97,7 @@ namespace MU5Editor.NodeEditor
         {
             Edge edge = new Edge();
             
-            //UID
+            //UID匹配 Node
             MU5Node outputNode = GetMU5NodeByUid(edgeData.uid_outputNode);
             MU5Node inputNode = GetMU5NodeByUid(edgeData.uid_inputNode);
 
@@ -112,9 +112,13 @@ namespace MU5Editor.NodeEditor
             AddElement(edge);
         }
 
+        
+        //遍历匹配UID
         public MU5Node GetMU5NodeByUid(string _uid)
         {
             MU5Node node = null;
+            
+            //查找匹配的UID
             foreach (var graphElement in graphElements)
             {
                 MU5Node _node = graphElement as MU5Node;
