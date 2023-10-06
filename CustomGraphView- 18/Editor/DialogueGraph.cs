@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,7 +9,7 @@ using Button = UnityEngine.UIElements.Button;
 public class DialogueGraph : EditorWindow
 {
     private DialogueGraphView _graphView;
-    private string _fileName = "New Narrative";
+    private string _fileName = "New Graph";
     
     [MenuItem("Tool/18-Dialogue")]
     public static void OpenDialogueGraphWindow()
@@ -22,6 +23,8 @@ public class DialogueGraph : EditorWindow
         //Tool Graph Virw
         ConstructGraphView();
         GenerateToolbar();
+
+        GenerateMiniMap();
     }
 
 
@@ -91,5 +94,16 @@ public class DialogueGraph : EditorWindow
     private void OnDisable()
     {
         rootVisualElement.Remove(_graphView);
+    }
+
+    private void GenerateMiniMap()
+    {
+        var minimap = new MiniMap
+        {
+            anchored = true,
+        };
+        
+        minimap.SetPosition(new Rect(10,30,200,140));
+        _graphView.Add(minimap);
     }
 }

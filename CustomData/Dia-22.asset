@@ -12,5 +12,57 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c469acd6fc46b7b4ea20450a95383e9a, type: 3}
   m_Name: Dia-22
   m_EditorClassIdentifier: 
-  nodeData_list: []
-  edgeData_list: []
+  nodeData_list:
+  - uid: 2851376e-e722-4ba7-95ed-065f43e7206c
+    nodeType_str: MU5Editor.NodeEditor.ExitNode
+    localBound:
+      serializedVersion: 2
+      x: 580
+      y: 0
+      width: 68
+      height: 77
+  - uid: e1cbf21e-6273-4642-895b-669fd7057adc
+    nodeType_str: MU5Editor.NodeEditor.EntryNode
+    localBound:
+      serializedVersion: 2
+      x: 32
+      y: -38
+      width: 76
+      height: 77
+  - uid: 99c28747-d4f5-49ab-8e46-5d729959afce
+    nodeType_str: MU5Editor.NodeEditor.SampleNode
+    localBound:
+      serializedVersion: 2
+      x: 207
+      y: -2
+      width: 113
+      height: 125
+  - uid: 98788b84-ed5c-47ba-ba0f-49696230b6f4
+    nodeType_str: MU5Editor.NodeEditor.SampleNode
+    localBound:
+      serializedVersion: 2
+      x: 392
+      y: 16
+      width: 113
+      height: 125
+  edgeData_list:
+  - uid_outputNode: e1cbf21e-6273-4642-895b-669fd7057adc
+    uid_outputPort: 500100
+    uid_inputNode: 99c28747-d4f5-49ab-8e46-5d729959afce
+    uid_inputPort: 000100
+  - uid_outputNode: e1cbf21e-6273-4642-895b-669fd7057adc
+    uid_outputPort: 500100
+    uid_inputNode: 99c28747-d4f5-49ab-8e46-5d729959afce
+    uid_inputPort: 000200
+  - uid_outputNode: 99c28747-d4f5-49ab-8e46-5d729959afce
+    uid_outputPort: 500100
+    uid_inputNode: 98788b84-ed5c-47ba-ba0f-49696230b6f4
+    uid_inputPort: 000100
+  - uid_outputNode: 99c28747-d4f5-49ab-8e46-5d729959afce
+    uid_outputPort: 500200
+    uid_inputNode: 98788b84-ed5c-47ba-ba0f-49696230b6f4
+    uid_inputPort: 000200
+  - uid_outputNode: 98788b84-ed5c-47ba-ba0f-49696230b6f4
+    uid_outputPort: 500100
+    uid_inputNode: 2851376e-e722-4ba7-95ed-065f43e7206c
+    uid_inputPort: 000100
