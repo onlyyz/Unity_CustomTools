@@ -45,7 +45,7 @@ namespace MU5Editor.NodeEditor
                         });
                     }
                 }
-            }
+            } 
 
             return entries;
         }

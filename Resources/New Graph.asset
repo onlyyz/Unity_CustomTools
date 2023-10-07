@@ -32,3 +32,8 @@ MonoBehaviour:
   - Guid: 32a9dc35-5c28-4302-aedf-0c04f97bc2ea
     DialogueText: Dialogue Node
     Position: {x: 510, y: 301}
+  ExposeProperty:
+  - PropertyName: Test
+    PropertyValue: Test
+  - PropertyName: New Name1
+    PropertyValue: New Value

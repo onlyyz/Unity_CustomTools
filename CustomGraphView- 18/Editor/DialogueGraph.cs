@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
@@ -25,6 +26,8 @@ public class DialogueGraph : EditorWindow
         GenerateToolbar();
 
         GenerateMiniMap();
+        
+        GenerateBlackBoard();
     }
 
 
@@ -48,13 +51,11 @@ public class DialogueGraph : EditorWindow
         
         
         //Create Button
-        var nodeCreateButton = new Button(() =>
-        {
-            _graphView.CreateNode("Dialogue Node");
-        });
-        nodeCreateButton.text = "Create Node";
+        // var nodeCreateButton = new Button(() => {_graphView.CreateNode("Dialogue Node");});
+        // nodeCreateButton.text = "Create Node";
+        // toolbar.Add(nodeCreateButton);
         
-        toolbar.Add(nodeCreateButton);
+        
         rootVisualElement.Add(toolbar);
     }
 
@@ -82,7 +83,7 @@ public class DialogueGraph : EditorWindow
 
     private void ConstructGraphView()
     {
-        _graphView = new DialogueGraphView()
+        _graphView = new DialogueGraphView(this)
         {
             name = "Dialogue Graph"
         };
@@ -98,12 +99,51 @@ public class DialogueGraph : EditorWindow
 
     private void GenerateMiniMap()
     {
+        
         var minimap = new MiniMap
         {
             anchored = true,
         };
         
-        minimap.SetPosition(new Rect(10,30,200,140));
+        //This will give 10 px offset form left side
+        var cords = _graphView.contentViewContainer.WorldToLocal(new Vector2( this.maxSize.x - 10, 30));
+        minimap.SetPosition(new Rect(cords.x,cords.y,200,140));
+        // minimap.SetPosition(new Rect(10,30,200,140));
         _graphView.Add(minimap);
     }
+
+    private void GenerateBlackBoard()
+    {
+        var blackBorad = new Blackboard(_graphView);
+        blackBorad.Add(new BlackboardSection
+        {
+            title = "Exposed Properties"
+        });
+        //Add 
+        blackBorad.addItemRequested = _blackBorad =>
+        {
+            _graphView.AddPropertyToBlackBoard(new ExposeProperty());
+        };
+        blackBorad.SetPosition(new Rect(10,30,200,300));
+        //Blackboard, VisualElement, string
+        blackBorad.editTextRequested = (blackboard, element, NewValue) =>
+        {
+            var oldPropertyName = ((BlackboardField)element).text;
+            if (_graphView.ExposeProperties.Any(x => x.PropertyName == NewValue))
+            {
+                EditorUtility.DisplayDialog("Error", "This property name already exists, please chose another one!",
+                    "ok");
+                return;
+            }
+
+            var propertyIndex = _graphView.ExposeProperties.FindIndex(x => x.PropertyName == oldPropertyName);
+            _graphView.ExposeProperties[propertyIndex].PropertyName = NewValue;
+            ((BlackboardField)element).text = NewValue;
+        };
+        
+        _graphView.Add(blackBorad);
+        _graphView.Blackboard = blackBorad;
+    }
+
+   
 }

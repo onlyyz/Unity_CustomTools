@@ -1,10 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
+using Vector2 = System.Numerics.Vector2;
 
 public class GraphSaveUtility 
 {
@@ -27,10 +27,23 @@ public class GraphSaveUtility
 
    public void SaveGraph(string fileName)
    {
-      if (!Edges.Any()) return;  //no edges( no connections ) then return
-      
       //创建一个新的对话容器
       var dialogueContainer = ScriptableObject.CreateInstance<DialogueContainer>();
+
+      if (!SaveNodes(dialogueContainer)) return;
+      SaveExposeProperties(dialogueContainer);
+      
+      if (!AssetDatabase.IsValidFolder("Assets/Resources"))
+         AssetDatabase.CreateFolder("Assets", "Resources");
+      
+      AssetDatabase.CreateAsset(dialogueContainer,$"Assets/Resources/{fileName}.asset");
+      AssetDatabase.SaveAssets();      
+      
+   }
+
+   private bool SaveNodes(DialogueContainer dialogueContainer)
+   {
+      if (!Edges.Any()) return false;  //no edges( no connections ) then return
        
       //过滤一个序列
       var connectedPorts = Edges.Where(x => x.input.node != null).ToArray();
@@ -62,14 +75,14 @@ public class GraphSaveUtility
          });
       }
 
-
-      if (!AssetDatabase.IsValidFolder("Assets/Resources"))
-         AssetDatabase.CreateFolder("Assets", "Resources");
-      
-      AssetDatabase.CreateAsset(dialogueContainer,$"Assets/Resources/{fileName}.asset");
-      AssetDatabase.SaveAssets();      
-      
+      return true;
    }
+
+   private void SaveExposeProperties(DialogueContainer dialogueContainer)
+   {
+      dialogueContainer.ExposeProperty.AddRange(_targetGraphView.ExposeProperties);
+   }
+   
    
    public void LoadGraph(string fileName)
    {
@@ -85,7 +98,7 @@ public class GraphSaveUtility
       ClearGraph();
       CreateNodes();
       ConnectNodes();
-
+      CreateExposeProperties();
    }
 
   
@@ -114,7 +127,7 @@ public class GraphSaveUtility
       foreach (var nodeData in _ContainerCache.DialogueNodeData)
       {
          //创建节点
-         var tempNode = _targetGraphView.CreateDialogueNode(nodeData.DialogueText);
+         var tempNode = _targetGraphView.CreateDialogueNode(nodeData.DialogueText,UnityEngine.Vector2.zero);
          tempNode.GUID = nodeData.Guid;
          
          _targetGraphView.AddElement(tempNode);
@@ -161,9 +174,21 @@ public class GraphSaveUtility
       tempEdge?.input.Connect(tempEdge);
       tempEdge?.output.Connect(tempEdge);
       
-      _targetGraphView.Add(tempEdge);
+      _targetGraphView.Add(tempEdge);  
    }
    
    #endregion
 
+
+   private void CreateExposeProperties()
+   {
+      //Clear existing Properties on hot-reload
+      _targetGraphView.ClearBlackBoardAndExposeProperty();
+      //add properties form data
+       
+      foreach (var exposeProperty in _ContainerCache.ExposeProperty)
+      {
+         _targetGraphView.AddPropertyToBlackBoard(exposeProperty);
+      }
+   }
 }

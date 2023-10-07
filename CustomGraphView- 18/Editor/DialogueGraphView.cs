@@ -1,17 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.UIElements;
-using Button = UnityEngine.UIElements.Button;
 
 public class DialogueGraphView : GraphView
 {
     public readonly Vector2 defaultNodeSize = new Vector2(250,200);
+    public List<ExposeProperty> ExposeProperties = new List<ExposeProperty>();
+    private NodeSearchWindow _searchWindow;
+    public Blackboard Blackboard;
     
-    public DialogueGraphView()
+    public DialogueGraphView(EditorWindow editorWindow)
     {
         styleSheets.Add(Resources.Load<StyleSheet>("DialogueGraph"));
         
@@ -30,9 +32,18 @@ public class DialogueGraphView : GraphView
         
         //添加到Graph View 基类
         AddElement(GenerateEntryPointNode());
+        AddSearchWindow(editorWindow);
+        
     }
 
-    
+    public void AddSearchWindow(EditorWindow editorWindow)
+    {
+        _searchWindow = ScriptableObject.CreateInstance<NodeSearchWindow>();
+        _searchWindow.Initialize(this, editorWindow);
+        
+        nodeCreationRequest = context => SearchWindow.Open(
+            new SearchWindowContext(context.screenMousePosition),_searchWindow);
+    }
     
     
     
@@ -90,12 +101,17 @@ public class DialogueGraphView : GraphView
     }
     
     //添加节点到Graph view ，同时创建node
-    public void CreateNode(String nodeName)
+    public void CreateNode(String nodeName, Vector2 positon)
     {
-        AddElement(CreateDialogueNode(nodeName));
+        AddElement(CreateDialogueNode(nodeName, positon));
     }
+    
+    
+    
+    
+    
     //没有加入Graph view
-    public DialogueNode CreateDialogueNode(String nodeName)
+    public DialogueNode CreateDialogueNode(String nodeName, Vector2 positon)
     {
         var dialogueNode = new DialogueNode()
         {
@@ -133,7 +149,7 @@ public class DialogueGraphView : GraphView
         //刷新节点
         dialogueNode.RefreshExpandedState();
         dialogueNode.RefreshPorts();
-        dialogueNode.SetPosition(new Rect(Vector2.zero, defaultNodeSize));
+        dialogueNode.SetPosition(new Rect(positon, defaultNodeSize));
         
         
         return dialogueNode;
@@ -201,5 +217,54 @@ public class DialogueGraphView : GraphView
         dialogueNode.outputContainer.Remove(generatedPort);
         dialogueNode.RefreshPorts();
         dialogueNode.RefreshExpandedState();
+    }
+
+    public void ClearBlackBoardAndExposeProperty()
+    {
+        ExposeProperties.Clear();
+        Blackboard.Clear();
+    }
+    
+    
+    public void AddPropertyToBlackBoard(ExposeProperty exposeProperty)
+    {
+        var localPropertyName = exposeProperty.PropertyName;
+        var localPropertyValue = exposeProperty.PropertyValue;
+
+        while (ExposeProperties.Any(x => x.PropertyName == localPropertyName))
+            localPropertyName = $"{localPropertyName}" + 1;  //USERname(1) ||USERname(1)(1) ETC...
+        
+        
+        var property = new ExposeProperty();
+        property.PropertyName = localPropertyName;
+        property.PropertyValue = localPropertyValue;
+        ExposeProperties.Add(property);
+
+        var container = new VisualElement();
+        var blackboard = new BlackboardField
+        {
+            text = localPropertyName,
+            typeText = "string property"
+        };
+        
+        container.Add(blackboard);
+
+        //Value
+        var propertyValueTextField = new TextField("Value")
+        {
+            value = localPropertyValue,
+        };
+        propertyValueTextField.RegisterValueChangedCallback(evt =>
+        {
+            var changingPropertyIndex = ExposeProperties.FindIndex
+                (x => x.PropertyName == property.PropertyName);
+            ExposeProperties[changingPropertyIndex].PropertyValue = evt.newValue;
+        });
+        
+        //parent children
+        var blackBoarValueRow = new BlackboardRow(blackboard, propertyValueTextField);
+        container.Add(blackBoarValueRow);
+        
+        Blackboard.Add(container);
     }
 }
