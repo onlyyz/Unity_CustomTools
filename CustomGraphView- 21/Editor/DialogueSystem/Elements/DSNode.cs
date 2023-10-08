@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Codice.CM.Client.Differences;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace DS.Elements
@@ -13,14 +13,15 @@ namespace DS.Elements
         public string Text { get; set; }
         public DSDialogueType DialogueType { get; set; }
 
-        public void Initialize()
+        public virtual void Initialize(Vector2 position)
         {
             DialogueName = "DialogueName";
             Choices = new List<string>();
             Text = "DIalogue text.";
+            SetPosition(new Rect(position,Vector2.zero));
         }
 
-        public void Draw()
+        public virtual void Draw()
         {
             
             TextField dialogueNameTextField = new TextField()
@@ -49,8 +50,6 @@ namespace DS.Elements
             textFoldout.Add(textFile);
             customDataContainer.Add(textFoldout);
             extensionContainer.Add(customDataContainer);
-
-            RefreshExpandedState();
         }
     } 
 }
