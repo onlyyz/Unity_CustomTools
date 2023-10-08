@@ -17,7 +17,7 @@ namespace DS.Elements
         {
             DialogueName = "DialogueName";
             Choices = new List<string>();
-            Text = "DIalogue text.";
+            Text = "Dialogue text.";
             SetPosition(new Rect(position,Vector2.zero));
         }
 

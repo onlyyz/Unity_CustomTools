@@ -10,7 +10,7 @@ public class SampleGraphEditorWindow : EditorWindow
     [MenuItem("Tool/19-GraphView")]
     public static void Open()
     {
-        GetWindow<SampleGraphEditorWindow>("19-SampleGraphView");
+        GetWindow<SampleGraphEditorWindow>("19-GraphView");
     }
     
     //add the Node for can Visual List

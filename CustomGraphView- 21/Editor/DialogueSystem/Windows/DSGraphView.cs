@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -6,6 +7,7 @@ using UnityEngine.UIElements;
 namespace DS.Winndos
 {
     using Elements;
+    using Enumerations;
     public class DSGraphView : GraphView
     {
         public DSGraphView()
@@ -18,16 +20,7 @@ namespace DS.Winndos
             
         }
 
-        public DSNode CreateNode(Vector2 position)
-        {
-            DSNode node = new DSNode();
-            
-            node.Initialize(position);
-            node.Draw();
-            
-            // AddElement(node);
-            return node;
-        }
+        
 
 
         
@@ -48,22 +41,40 @@ namespace DS.Winndos
         {
             SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
   
-            //增加控制器
-            this.AddManipulator(CreateNodeContextualMenu());
+           
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new ContentDragger()); 
             this.AddManipulator(new RectangleSelector());
+            
+            this.AddManipulator(CreateNodeContextualMenu("Add Node (Single Choice)", DSDialogueType.SingleChoice));
+            this.AddManipulator(CreateNodeContextualMenu("Add Node (Multiple Choice)", DSDialogueType.MultipleChoice));
         }
 
-        private IManipulator CreateNodeContextualMenu()
+        private IManipulator CreateNodeContextualMenu(string actionTitle,DSDialogueType dialogueType)
         {
             ContextualMenuManipulator contextlMenuManipulartor = new ContextualMenuManipulator
             (
-                menuEvet => menuEvet.menu.AppendAction("Add Node", 
-                    actionEvent => AddElement(CreateNode(actionEvent.eventInfo.localMousePosition)))
+                menuEvet => menuEvet.menu.AppendAction(actionTitle, 
+                    actionEvent => AddElement(CreateNode(dialogueType,actionEvent.eventInfo.localMousePosition)))
             );
             return contextlMenuManipulartor;
         }
+        #endregion
+
+        #region Node
+        
+        public DSNode CreateNode(DSDialogueType dialogueType, Vector2 position)
+        {
+            
+            Type nodeType = Type.GetType($"DS.Elements.DS{dialogueType}Node");
+            DSNode node = (DSNode) Activator.CreateInstance(nodeType);
+            
+            node.Initialize(position);
+            node.Draw();
+            
+            return node;
+        }
+        
         #endregion
     }
 }

@@ -184,7 +184,8 @@ public class DialogueGraphView : GraphView
         //空隙
       
         //TODO:Bug 文本框有问题  
-        // generatedPort.contentContainer.Add(textField);
+        textField.style.flexDirection = FlexDirection.Column;
+        generatedPort.contentContainer.Add(textField);
         
         var deleteButton = new Button(() => RemovePort(dialogueNode, generatedPort))
         {

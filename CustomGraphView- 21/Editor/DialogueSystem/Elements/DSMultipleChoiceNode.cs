@@ -1,9 +1,8 @@
- using UnityEditor.Experimental.GraphView;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
- using UnityEngine.Rendering;
- using UnityEngine.UIElements;
+using UnityEngine.UIElements;
 
- namespace DS.Elements
+namespace DS.Elements
 {
     using Enumerations;
     public class DSMultipleChoiceNode : DSNode
@@ -41,6 +40,8 @@ using UnityEngine;
                 {
                     value = choice
                 };
+                choiceTextField.style.flexDirection = FlexDirection.Column;
+                
                 choicePort.Add(choiceTextField);
                 choicePort.Add(deleteChoiceButton);
                 
