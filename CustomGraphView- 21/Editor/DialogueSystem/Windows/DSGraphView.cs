@@ -34,7 +34,9 @@ namespace DS.Winndos
         private void AddStyles()
         {
             StyleSheet styleSheet = (StyleSheet) EditorGUIUtility.Load("DialogueSystem/DSGraphViewStyles.uss");
+            StyleSheet nodeStyleSheet = (StyleSheet) EditorGUIUtility.Load("DialogueSystem/DSNodeStyles.uss");
             styleSheets.Add(styleSheet);
+            styleSheets.Add(nodeStyleSheet);
         }
 
         private void AddManipulators()
@@ -73,7 +75,7 @@ namespace DS.Winndos
             node.Draw();
             
             return node;
-        }
+        } 
         
         #endregion
     }

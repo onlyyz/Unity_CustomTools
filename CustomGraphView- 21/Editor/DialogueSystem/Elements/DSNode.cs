@@ -19,6 +19,8 @@ namespace DS.Elements
             Choices = new List<string>();
             Text = "Dialogue text.";
             SetPosition(new Rect(position,Vector2.zero));
+            
+            extensionContainer.AddToClassList("ds-node_extension-container");
         }
 
         public virtual void Draw()
@@ -29,6 +31,9 @@ namespace DS.Elements
                 value = DialogueName
             };
             
+            dialogueNameTextField.AddToClassList("ds-node_textfield");
+            dialogueNameTextField.AddToClassList("ds-node_filename-textfield");
+            dialogueNameTextField.AddToClassList("ds-node_textfield");
             titleContainer.Insert(0,dialogueNameTextField);
             
             /* INPUT PORT */
@@ -38,6 +43,7 @@ namespace DS.Elements
 
             /* EXTENSION CONTAINER */
             VisualElement customDataContainer = new VisualElement();
+            customDataContainer.AddToClassList("ds-node_custom-data-container");
             
             Foldout textFoldout = new Foldout()
             {
@@ -47,6 +53,10 @@ namespace DS.Elements
             {
                 value = Text
             };
+            
+            textFile.AddToClassList("ds-node_textfield");
+            textFile.AddToClassList("ds-node_quote-textfield");
+            
             textFoldout.Add(textFile);
             customDataContainer.Add(textFoldout);
             extensionContainer.Add(customDataContainer);

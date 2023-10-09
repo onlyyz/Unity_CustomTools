@@ -24,6 +24,7 @@ namespace DS.Elements
             {
                 text = "Add Choice"
             };
+            addChoiceButton.AddToClassList("ds-node_button");
             mainContainer.Insert(1,addChoiceButton);
             
             /* OUTPUT PORT */
@@ -36,10 +37,16 @@ namespace DS.Elements
                 {
                     text = "X"
                 };
+                deleteChoiceButton.AddToClassList("ds-node_button");
+                
                 TextField choiceTextField = new TextField()
                 {
                     value = choice
                 };
+                choiceTextField.AddToClassList("ds-node_textfield");
+                choiceTextField.AddToClassList("ds-node_choice-textfield");
+                choiceTextField.AddToClassList("ds-node_textfield_hidden");
+                
                 choiceTextField.style.flexDirection = FlexDirection.Column;
                 
                 choicePort.Add(choiceTextField);
