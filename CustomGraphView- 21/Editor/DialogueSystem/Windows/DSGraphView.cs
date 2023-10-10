@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -20,10 +21,34 @@ namespace DS.Winndos
             
         }
 
-        
+        #region Overrided Methods
+   
+        public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
+        {
+            List<Port> compatiblePorts = new List<Port>();
 
+            ports.ForEach(port =>
+            {
+                if (startPort ==port)
+                {
+                    return; 
+                }
+                if (startPort.node ==port.node)
+                {
+                    return; 
+                }
+                if (startPort.direction ==port.direction)
+                {
+                    return; 
+                }
+                compatiblePorts.Add(port);
+            });
+            
+            return compatiblePorts;
+        }
 
-        
+        #endregion
+
         #region Styles
         private void AddGridBackground()
         {
@@ -39,6 +64,10 @@ namespace DS.Winndos
             styleSheets.Add(nodeStyleSheet);
         }
 
+        #endregion
+
+        #region AddManipulators
+        
         private void AddManipulators()
         {
             SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
@@ -48,8 +77,13 @@ namespace DS.Winndos
             this.AddManipulator(new ContentDragger()); 
             this.AddManipulator(new RectangleSelector());
             
+            
             this.AddManipulator(CreateNodeContextualMenu("Add Node (Single Choice)", DSDialogueType.SingleChoice));
             this.AddManipulator(CreateNodeContextualMenu("Add Node (Multiple Choice)", DSDialogueType.MultipleChoice));
+            
+            this.AddManipulator(CreateGroupContextualMenu());
+
+
         }
 
         private IManipulator CreateNodeContextualMenu(string actionTitle,DSDialogueType dialogueType)
@@ -61,9 +95,20 @@ namespace DS.Winndos
             );
             return contextlMenuManipulartor;
         }
+
+        private IManipulator CreateGroupContextualMenu()
+        {
+            ContextualMenuManipulator contextlMenuManipulartor = new ContextualMenuManipulator(
+            menuEvet => menuEvet.menu.AppendAction("Add Group", 
+                    actionEvent => AddElement(CreateGroup("DialogueGroup",actionEvent.eventInfo.localMousePosition)))
+                );
+            return contextlMenuManipulartor;
+        }
+        
+        
         #endregion
 
-        #region Node
+        #region Element Addition
         
         public DSNode CreateNode(DSDialogueType dialogueType, Vector2 position)
         {
@@ -75,7 +120,18 @@ namespace DS.Winndos
             node.Draw();
             
             return node;
-        } 
+        }
+
+        public Group CreateGroup(String title, Vector2 position)
+        {
+            Group group = new Group
+            {
+                title = title
+            };
+            group.SetPosition(new Rect(position,Vector2.zero));
+            
+            return group;
+        }
         
         #endregion
     }

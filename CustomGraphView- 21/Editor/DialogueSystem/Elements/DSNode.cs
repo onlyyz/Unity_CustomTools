@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 namespace DS.Elements
 {
     using Enumerations;
+    using Utilities;
     public class DSNode : Node
     {
         public string DialogueName { get; set; }
@@ -25,11 +26,8 @@ namespace DS.Elements
 
         public virtual void Draw()
         {
-            
-            TextField dialogueNameTextField = new TextField()
-            {
-                value = DialogueName
-            };
+
+            TextField dialogueNameTextField = DSElementUtility.CreateTextField(DialogueName);
             
             dialogueNameTextField.AddToClassList("ds-node_textfield");
             dialogueNameTextField.AddToClassList("ds-node_filename-textfield");
@@ -37,22 +35,16 @@ namespace DS.Elements
             titleContainer.Insert(0,dialogueNameTextField);
             
             /* INPUT PORT */
-            Port inputPort = InstantiatePort(Orientation.Horizontal, Direction.Input, Port.Capacity.Multi , typeof(bool));
-            inputPort.portName = "Dialogue Connection";
+            Port inputPort = this.CreatePort("Dialogue Connection",Orientation.Horizontal, Direction.Input,Port.Capacity.Multi);
+          
             inputContainer.Add(inputPort);
 
             /* EXTENSION CONTAINER */
             VisualElement customDataContainer = new VisualElement();
             customDataContainer.AddToClassList("ds-node_custom-data-container");
-            
-            Foldout textFoldout = new Foldout()
-            {
-                text = "Dialogue Text"
-            };
-            TextField textFile = new TextField()
-            {
-                value = Text
-            };
+
+            Foldout textFoldout = DSElementUtility.CreateFoldout("Dialogue Text");
+            TextField textFile = DSElementUtility.CreateTextArea(DialogueName);
             
             textFile.AddToClassList("ds-node_textfield");
             textFile.AddToClassList("ds-node_quote-textfield");

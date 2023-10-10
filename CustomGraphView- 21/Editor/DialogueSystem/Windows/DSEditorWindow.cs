@@ -21,7 +21,7 @@ namespace DS.Winndos
 
 
 
-        #region Graph View
+        #region Elements Addtion
 
         private void AddGraphView()
         {
@@ -31,11 +31,14 @@ namespace DS.Winndos
         }
 
         #endregion
+
         
+        #region Styles
         private void AddStyles()
         {
             StyleSheet styleSheet = (StyleSheet) EditorGUIUtility.Load("DialogueSystem/DSVariables.uss");
             rootVisualElement.styleSheets.Add(styleSheet);
         }
+        #endregion
     }
 }
