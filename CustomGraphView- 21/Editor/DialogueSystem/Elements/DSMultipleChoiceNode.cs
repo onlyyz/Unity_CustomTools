@@ -51,9 +51,12 @@ namespace DS.Elements
             deleteChoiceButton.AddToClassList("ds-node_button");
 
             TextField choiceTextField = DSElementUtility.CreateTextField(choice);
-            choiceTextField.AddToClassList("ds-node_textfield");
-            choiceTextField.AddToClassList("ds-node_choice-textfield");
-            choiceTextField.AddToClassList("ds-node_textfield_hidden");
+            choiceTextField.AddClasses
+            (
+                "ds-node_textfield",
+                "ds-node_choice-textfield",
+                "ds-node_textfield_hidden"
+            );
                 
             choiceTextField.style.flexDirection = FlexDirection.Column;
                 

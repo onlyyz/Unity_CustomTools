@@ -3,6 +3,7 @@ using UnityEngine.UIElements;
 
 namespace DS.Winndos
 {
+    using Utilities;
     public class DSEditorWindow : EditorWindow
     {
         [MenuItem("Tool/21-ScriptGraph")]
@@ -36,8 +37,7 @@ namespace DS.Winndos
         #region Styles
         private void AddStyles()
         {
-            StyleSheet styleSheet = (StyleSheet) EditorGUIUtility.Load("DialogueSystem/DSVariables.uss");
-            rootVisualElement.styleSheets.Add(styleSheet);
+            rootVisualElement.AddStyleSheets("DialogueSystem/DSVariables.uss");
         }
         #endregion
     }

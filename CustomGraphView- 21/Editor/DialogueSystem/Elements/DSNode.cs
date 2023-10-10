@@ -28,10 +28,14 @@ namespace DS.Elements
         {
 
             TextField dialogueNameTextField = DSElementUtility.CreateTextField(DialogueName);
+
+            dialogueNameTextField.AddClasses
+                (
+                    "ds-node_textfield",
+                    "ds-node_filename-textfield",
+                    "ds-node_textfield"
+                );
             
-            dialogueNameTextField.AddToClassList("ds-node_textfield");
-            dialogueNameTextField.AddToClassList("ds-node_filename-textfield");
-            dialogueNameTextField.AddToClassList("ds-node_textfield");
             titleContainer.Insert(0,dialogueNameTextField);
             
             /* INPUT PORT */
@@ -46,8 +50,12 @@ namespace DS.Elements
             Foldout textFoldout = DSElementUtility.CreateFoldout("Dialogue Text");
             TextField textFile = DSElementUtility.CreateTextArea(DialogueName);
             
-            textFile.AddToClassList("ds-node_textfield");
-            textFile.AddToClassList("ds-node_quote-textfield");
+            
+            textFile.AddClasses
+            (
+                "ds-node_textfield",
+                "ds-node_quote-textfield"
+            );
             
             textFoldout.Add(textFile);
             customDataContainer.Add(textFoldout);
