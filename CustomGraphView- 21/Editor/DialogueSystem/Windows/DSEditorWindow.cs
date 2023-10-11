@@ -26,7 +26,7 @@ namespace DS.Winndos
 
         private void AddGraphView()
         {
-            DSGraphView GraphView = new DSGraphView();
+            DSGraphView GraphView = new DSGraphView(this);
             GraphView.StretchToParentSize();
             rootVisualElement.Add(GraphView);
         }
