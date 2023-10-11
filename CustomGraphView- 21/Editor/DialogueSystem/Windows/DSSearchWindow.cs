@@ -60,7 +60,6 @@ namespace DS.Winndos
                 }
                 case DSDialogueType.MultipleChoice:
                 {
-                    Debug.Log("Test");
                     DSMultipleChoiceNode multipleChoiceNode = (DSMultipleChoiceNode)graphView.CreateNode
                         (DSDialogueType.MultipleChoice, localMousePosition);
                     graphView.AddElement(multipleChoiceNode);

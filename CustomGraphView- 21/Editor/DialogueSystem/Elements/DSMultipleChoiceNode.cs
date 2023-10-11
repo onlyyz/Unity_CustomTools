@@ -6,12 +6,12 @@ namespace DS.Elements
 {
     using Enumerations;
     using Utilities;
-    
+    using Winndos;
     public class DSMultipleChoiceNode : DSNode
     {
-        public override void Initialize(Vector2 position)
+        public override void Initialize(DSGraphView DSGraphView, Vector2 position)
         {
-            base.Initialize(position);
+            base.Initialize(DSGraphView,position);
             DialogueType = DSDialogueType.MultipleChoice;
             Choices.Add("New Choice");
         }

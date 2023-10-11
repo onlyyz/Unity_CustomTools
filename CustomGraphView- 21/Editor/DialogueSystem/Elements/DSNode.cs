@@ -7,6 +7,7 @@ namespace DS.Elements
 {
     using Enumerations;
     using Utilities;
+    using Winndos;
     public class DSNode : Node
     {
         public string DialogueName { get; set; }
@@ -14,8 +15,19 @@ namespace DS.Elements
         public string Text { get; set; }
         public DSDialogueType DialogueType { get; set; }
 
-        public virtual void Initialize(Vector2 position)
+
+        private DSGraphView graphView;
+        
+        
+        
+        private Color defaultBackgroundColor;
+
+        public virtual void Initialize(DSGraphView DSGraphView, Vector2 position)
         {
+            this.graphView = DSGraphView;
+            defaultBackgroundColor = new Color(29/255, 29/255, 30/255);
+            
+            
             DialogueName = "DialogueName";
             Choices = new List<string>();
             Text = "Dialogue text.";
@@ -27,7 +39,13 @@ namespace DS.Elements
         public virtual void Draw()
         {
 
-            TextField dialogueNameTextField = DSElementUtility.CreateTextField(DialogueName);
+            TextField dialogueNameTextField = DSElementUtility.CreateTextField(DialogueName,
+                callback =>
+                {
+                    graphView.RemoveUngroundedNode(this);
+                    DialogueName = callback.newValue;
+                    graphView.AddUngroupedNode(this);
+                });
 
             dialogueNameTextField.AddClasses
                 (
@@ -61,5 +79,20 @@ namespace DS.Elements
             customDataContainer.Add(textFoldout);
             extensionContainer.Add(customDataContainer);
         }
+
+        #region Style
+        
+        public void SetErrorStyle(Color color)
+        {
+            mainContainer.style.backgroundColor = color;
+        }
+
+
+        public void ResetStyle()
+        {
+            mainContainer.style.backgroundColor = defaultBackgroundColor;
+        }
+        
+        #endregion
     } 
 }

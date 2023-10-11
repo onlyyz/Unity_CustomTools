@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 
 namespace DS.Winndos
 {
+    using Data.Error;
     using Elements;
     using Enumerations;
     using Utilities;
@@ -15,9 +16,14 @@ namespace DS.Winndos
     {
         private DSEditorWindow editorWindow;
         private DSSearchWindow searchWindow;
+
+        private SerializableDictionary<String, DSNodeErrorData> ungroupedNodes; 
         public DSGraphView(DSEditorWindow dsEditorWindow)
         {
             editorWindow = dsEditorWindow;
+            ungroupedNodes = new SerializableDictionary<string, DSNodeErrorData>();
+            
+            
             
             AddManipulators();
             AddSearchWindow();
@@ -138,8 +144,11 @@ namespace DS.Winndos
             Type nodeType = Type.GetType($"DS.Elements.DS{dialogueType}Node");
             DSNode node = (DSNode) Activator.CreateInstance(nodeType);
             
-            node.Initialize(position);
+            node.Initialize(this,position);
             node.Draw();
+
+            //Save Data
+            AddUngroupedNode(node);
             
             return node;
         }
@@ -156,6 +165,58 @@ namespace DS.Winndos
         }
         
         #endregion
+
+        #region Repeated Elements
+
+        public void AddUngroupedNode(DSNode node)
+        {
+            string nodeName = node.DialogueName;
+
+            //check same Node   not'
+            if (!ungroupedNodes.ContainsKey(nodeName))
+            {
+                //Colors and the Nodes
+                DSNodeErrorData nodeErrorData = new DSNodeErrorData();
+                
+                nodeErrorData.Nodes.Add(node);
+                ungroupedNodes.Add(nodeName,nodeErrorData);
+                return;
+            }
+
+            List<DSNode> ungroupedNodesList = ungroupedNodes[nodeName].Nodes;
+            
+            ungroupedNodesList.Add(node);
+            Color errorColor = ungroupedNodes[nodeName].ErrorData.Color;
+            node.SetErrorStyle(errorColor);
+
+            if (ungroupedNodesList.Count == 2)
+            {
+                ungroupedNodesList[0].SetErrorStyle(errorColor);
+            }
+        }
+
+        //if the name same but change the name for node, need remove the node error color in the Graph view
+        public void RemoveUngroundedNode(DSNode node)
+        {
+            string nodeName = node.DialogueName;
+            List<DSNode> ungroupedNodesList = ungroupedNodes[nodeName].Nodes;
+            
+            ungroupedNodesList.Remove(node);
+            node.ResetStyle();
+            if (ungroupedNodesList.Count == 1)
+            {
+                ungroupedNodesList[0].ResetStyle();
+                return;
+            }
+            
+            //delete the element for the Dictionary
+            if (ungroupedNodesList.Count == 0)
+            {
+                ungroupedNodes.Remove(nodeName);
+            }
+        }
+        #endregion
+        
 
         #region Utilities
 
