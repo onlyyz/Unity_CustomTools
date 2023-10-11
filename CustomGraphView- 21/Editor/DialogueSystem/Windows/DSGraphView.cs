@@ -29,7 +29,7 @@ namespace DS.Winndos
             AddSearchWindow();
             AddGridBackground();
 
-            
+            OnElementsDeleted();
             
             AddStyles();
             
@@ -166,6 +166,34 @@ namespace DS.Winndos
         
         #endregion
 
+        #region CallBack
+
+        //node delete call back function will remove the node at the data list
+        private void OnElementsDeleted()
+        {
+            deleteSelection = (operationName, askUser) =>
+            {
+                List<DSNode> nodesToDelete = new List<DSNode>();
+                foreach (GraphElement element in selection)
+                {
+                    //mode 
+                    if (element is DSNode node)
+                    {
+                        nodesToDelete.Add(node);
+                        continue;
+                    }
+                }
+
+                foreach (var node in nodesToDelete)
+                {
+                    RemoveUngroundedNode(node);
+                    RemoveElement(node);
+                }
+            };
+        }
+
+        #endregion
+        
         #region Repeated Elements
 
         public void AddUngroupedNode(DSNode node)
