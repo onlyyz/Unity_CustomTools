@@ -17,11 +17,13 @@ namespace DS.Winndos
         private DSEditorWindow editorWindow;
         private DSSearchWindow searchWindow;
 
-        private SerializableDictionary<String, DSNodeErrorData> ungroupedNodes; 
+        private SerializableDictionary<String, DSNodeErrorData> ungroupedNodes;
+        private SerializableDictionary<Group, SerializableDictionary<String, DSNodeErrorData>> groupNodes;
         public DSGraphView(DSEditorWindow dsEditorWindow)
         {
             editorWindow = dsEditorWindow;
             ungroupedNodes = new SerializableDictionary<string, DSNodeErrorData>();
+            groupNodes = new SerializableDictionary<Group, SerializableDictionary<string, DSNodeErrorData>>();
             
             
             
@@ -29,7 +31,10 @@ namespace DS.Winndos
             AddSearchWindow();
             AddGridBackground();
 
+            //Call back
             OnElementsDeleted();
+            OnGroupElementAdded();
+            OnGroupElementsRemoved();
             
             AddStyles();
             
@@ -167,7 +172,7 @@ namespace DS.Winndos
         #endregion
 
         #region CallBack
-
+        
         //node delete call back function will remove the node at the data list
         private void OnElementsDeleted()
         {
@@ -186,11 +191,57 @@ namespace DS.Winndos
 
                 foreach (var node in nodesToDelete)
                 {
+                    if (node.Group != null)
+                    {
+                        node.Group.RemoveElement(node);
+                    }
                     RemoveUngroundedNode(node);
                     RemoveElement(node);
                 }
             };
         }
+
+        
+        private void OnGroupElementAdded()
+        {
+            elementsAddedToGroup = (group, elements) =>
+            {
+                foreach (GraphElement element in elements)
+                {
+                    if (!(element is DSNode))
+                    {
+                        continue;
+                    }
+
+                    DSNode node = (DSNode) element;
+                    RemoveUngroundedNode(node);
+                    AddGroupedNode(node,group);
+                }
+            }; 
+        }
+
+        private void OnGroupElementsRemoved()
+        {
+            elementsRemovedFromGroup = (group, elements) =>
+            {
+                foreach (GraphElement element in elements)
+                {
+                    if (!(element is DSNode))
+                    {
+                        continue;
+                    }
+
+                    DSNode node = (DSNode) element;
+                    
+                    //Remove node form group and add to graph view
+                    RemoveGroupedNode(node,group);
+                    AddUngroupedNode(node);
+                    
+                }
+            };
+        }
+
+
 
         #endregion
         
@@ -211,6 +262,8 @@ namespace DS.Winndos
                 return;
             }
 
+            
+            //set the error color for the same name node 
             List<DSNode> ungroupedNodesList = ungroupedNodes[nodeName].Nodes;
             
             ungroupedNodesList.Add(node);
@@ -242,6 +295,65 @@ namespace DS.Winndos
             {
                 ungroupedNodes.Remove(nodeName);
             }
+        }
+        
+        public void AddGroupedNode(DSNode node, Group group)
+        {
+            string nodeName = node.DialogueName;
+            node.Group = group;
+            //Same name group
+            if (!groupNodes.ContainsKey(group))
+            {
+                groupNodes.Add(group,new SerializableDictionary<string, DSNodeErrorData>());
+            }
+
+            if (!groupNodes[group].ContainsKey(nodeName))
+            {
+                //Colors and the Nodes
+                DSNodeErrorData nodeErrorData = new DSNodeErrorData();
+                
+                nodeErrorData.Nodes.Add(node);
+                groupNodes[group].Add(nodeName,nodeErrorData);
+                return;
+            }
+
+            
+            //set the error color for the same name node 
+            List<DSNode> groupedNodeList = groupNodes[group][nodeName].Nodes;
+            groupedNodeList.Add(node);
+            Color errorColor = groupNodes[group][nodeName].ErrorData.Color;
+            
+            node.SetErrorStyle(errorColor);
+
+            if (groupedNodeList.Count == 2)
+            {
+                groupedNodeList[0].SetErrorStyle(errorColor);
+            }
+        }
+
+        public void RemoveGroupedNode(DSNode node, Group group)
+        {
+            string nodeName = node.DialogueName;
+            node.Group = null;
+            List<DSNode> groupedNodesList = groupNodes[group][nodeName].Nodes;
+            groupedNodesList.Remove(node);
+            node.ResetStyle();
+
+            if (groupedNodesList.Count ==1)
+            {
+                groupedNodesList[0].ResetStyle();   
+                return;
+            }
+
+            if (groupedNodesList.Count ==0)
+            {
+                groupNodes[group].Remove(nodeName);
+                if (groupNodes[group].Count == 0)
+                {
+                    groupNodes.Remove(group);
+                }
+            }
+            
         }
         #endregion
         
