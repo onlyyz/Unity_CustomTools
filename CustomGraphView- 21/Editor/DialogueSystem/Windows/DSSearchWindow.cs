@@ -68,8 +68,7 @@ namespace DS.Winndos
                 
                 case Group _:
                 {
-                    DSGroup group = graphView.CreateGroup("DialogueGroup", localMousePosition);
-                    graphView.AddElement(group);
+                    graphView.CreateGroup("DialogueGroup", localMousePosition);
                     return true;
                 }
                 default:
@@ -77,8 +76,6 @@ namespace DS.Winndos
                     return false;
                 }
             }
-
-            return true;
         }
     }
 }

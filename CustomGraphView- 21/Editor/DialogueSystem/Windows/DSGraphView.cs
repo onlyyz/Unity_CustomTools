@@ -122,8 +122,7 @@ namespace DS.Winndos
         {
             ContextualMenuManipulator contextlMenuManipulartor = new ContextualMenuManipulator(
             menuEvet => menuEvet.menu.AppendAction("Add Group", 
-                    actionEvent => AddElement(CreateGroup("DialogueGroup",GetLocalMousePosition(actionEvent.eventInfo.localMousePosition))))
-                );
+                    actionEvent => CreateGroup("DialogueGroup",GetLocalMousePosition(actionEvent.eventInfo.localMousePosition))));
             return contextlMenuManipulartor;
         }
         
@@ -143,8 +142,6 @@ namespace DS.Winndos
             nodeCreationRequest = context => SearchWindow.Open(new 
                 SearchWindowContext(context.screenMousePosition),searchWindow);
         }
-        
-        
         
         public DSNode CreateNode(DSDialogueType dialogueType, Vector2 position)
         {
@@ -166,12 +163,26 @@ namespace DS.Winndos
             DSGroup group = new DSGroup(title, position);
 
             AddGroup(group);
+            AddElement(group);
+            
+            foreach (GraphElement element in selection)
+            {
+                if (!(element is DSNode))
+                {
+                    continue;
+                }
+
+                DSNode node = (DSNode)element;
+                group.AddElement(node);
+            }
+            
+            
             return group;
         }
         
         #endregion
 
-        #region CallBack
+        #region Callbacks
         
         //node delete call back function will remove the node at the data list
         private void OnElementsDeleted()
@@ -196,13 +207,28 @@ namespace DS.Winndos
                     }
 
                     DSGroup group = (DSGroup)element;
-                    
-                    RemoveGroup(group);
                     groupsToDelete.Add(group);
                 }
 
                 foreach (var group in groupsToDelete)
                 {
+                    //delete the node in the group
+                    List<DSNode> groupNodes = new List<DSNode>();
+
+                    foreach (GraphElement groupElement in group.containedElements)
+                    {
+                        if (!(groupElement is DSNode))
+                        {
+                            continue;
+                        }
+                        
+                        //get delete node 
+                        groupNodes.Add((DSNode)groupElement);
+                    }
+                    //remove the node at the group
+                    group.RemoveElements(groupNodes);
+                    
+                    RemoveGroup(group);
                     RemoveElement(group);
                 }
                 
@@ -219,7 +245,6 @@ namespace DS.Winndos
                 
             };
         }
-
         
         private void OnGroupElementAdded()
         {
@@ -234,6 +259,7 @@ namespace DS.Winndos
 
                     DSGroup nodeGroup = (DSGroup)group;
                     DSNode node = (DSNode) element;
+                    
                     RemoveUngroundedNode(node);
                     AddGroupedNode(node,nodeGroup);
                 }
