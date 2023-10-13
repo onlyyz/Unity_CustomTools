@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Plastic.Antlr3.Runtime.Misc;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -188,10 +189,13 @@ namespace DS.Winndos
         private void OnElementsDeleted()
         {
             Type groupType = typeof(DSGroup);
+            Type edgeType = typeof(Edge);
+            
             deleteSelection = (operationName, askUser) =>
             {
                 List<DSGroup> groupsToDelete = new List<DSGroup>();
                 List<DSNode> nodesToDelete = new List<DSNode>();
+                List<Edge> edgesToDelete = new ListStack<Edge>();
                 foreach (GraphElement element in selection)
                 {
                     //mode 
@@ -199,6 +203,12 @@ namespace DS.Winndos
                     {
                         nodesToDelete.Add(node);
                         continue;
+                    }
+
+                    if (element.GetType() == edgeType)
+                    {
+                       edgesToDelete.Add((Edge) element);
+                       continue;
                     }
 
                     if (element.GetType() != groupType)
@@ -210,6 +220,13 @@ namespace DS.Winndos
                     groupsToDelete.Add(group);
                 }
 
+                //Remove the Elements
+                
+                DeleteElements(edgesToDelete);
+                
+                
+                
+                
                 foreach (var group in groupsToDelete)
                 {
                     //delete the node in the group
@@ -239,10 +256,10 @@ namespace DS.Winndos
                         node.Group.RemoveElement(node);
                     }
                     RemoveUngroundedNode(node);
+                    
+                    node.DisconnectAllPortS();
                     RemoveElement(node);
                 }
-
-                
             };
         }
         
