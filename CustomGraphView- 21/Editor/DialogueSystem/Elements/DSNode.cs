@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace DS.Elements
     using Winndos;
     public class DSNode : Node
     {
+        public string ID { get; set; }
         public string DialogueName { get; set; }
         public List<string> Choices { get; set; }
         public string Text { get; set; }
@@ -26,8 +28,8 @@ namespace DS.Elements
         {
             this.graphView = DSGraphView;
             defaultBackgroundColor = new Color(29/255, 29/255, 30/255);
-            
-            
+
+            ID = Guid.NewGuid().ToString();
             DialogueName = "DialogueName";
             Choices = new List<string>();
             Text = "Dialogue text.";

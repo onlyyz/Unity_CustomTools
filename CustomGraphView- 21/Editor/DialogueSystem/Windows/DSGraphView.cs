@@ -339,7 +339,7 @@ namespace DS.Winndos
                 dsGroup.title = newTitle.RemoveWhitespaces().RemoveSpecialCharacters();
                 
                 RemoveGroup(dsGroup);
-                dsGroup.oldTitle =  dsGroup.title;
+                dsGroup.OldTitle =  dsGroup.title;
                 AddGroup(dsGroup);
             };
         }
@@ -496,7 +496,7 @@ namespace DS.Winndos
 
         public void RemoveGroup(DSGroup group)
         {
-            string oldGroupName = group.oldTitle.ToLower();
+            string oldGroupName = group.OldTitle.ToLower();
             List<DSGroup> groupsList = groups[oldGroupName].Groups;
             
             groupsList.Remove(group);
