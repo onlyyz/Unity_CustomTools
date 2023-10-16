@@ -336,9 +336,10 @@ namespace DS.Winndos
             groupTitleChanged = (group, newTitle) =>
             {
                 DSGroup dsGroup = (DSGroup) group;
+                dsGroup.title = newTitle.RemoveWhitespaces().RemoveSpecialCharacters();
                 
                 RemoveGroup(dsGroup);
-                dsGroup.oldTitle = newTitle;
+                dsGroup.oldTitle =  dsGroup.title;
                 AddGroup(dsGroup);
             };
         }
@@ -353,7 +354,7 @@ namespace DS.Winndos
        
         public void AddUngroupedNode(DSNode node)
         {
-            string nodeName = node.DialogueName;
+            string nodeName = node.DialogueName.ToLower();
 
             //check same Node   not'
             if (!ungroupedNodes.ContainsKey(nodeName))
@@ -384,7 +385,7 @@ namespace DS.Winndos
         //if the name same but change the name for node, need remove the node error color in the Graph view
         public void RemoveUngroundedNode(DSNode node)
         {
-            string nodeName = node.DialogueName;
+            string nodeName = node.DialogueName.ToLower();
             List<DSNode> ungroupedNodesList = ungroupedNodes[nodeName].Nodes;
             
             ungroupedNodesList.Remove(node);
@@ -409,7 +410,7 @@ namespace DS.Winndos
         /// </summary>
         private void AddGroup(DSGroup group)
         {
-            string groupName = group.title;
+            string groupName = group.title.ToLower();
             if (!groups.ContainsKey(groupName))
             {
                 DSGroupErrorData groupErrorData = new DSGroupErrorData();
@@ -434,7 +435,7 @@ namespace DS.Winndos
         }
         public void AddGroupedNode(DSNode node, DSGroup group) 
         {
-            string nodeName = node.DialogueName;
+            string nodeName = node.DialogueName.ToLower();
             node.Group = group;
             //Same name group
             if (!groupNodes.ContainsKey(group))
@@ -469,7 +470,7 @@ namespace DS.Winndos
 
         public void RemoveGroupedNode(DSNode node, Group group)
         {
-            string nodeName = node.DialogueName;
+            string nodeName = node.DialogueName.ToLower();
             node.Group = null;
             List<DSNode> groupedNodesList = groupNodes[group][nodeName].Nodes;
             groupedNodesList.Remove(node);
@@ -495,7 +496,7 @@ namespace DS.Winndos
 
         public void RemoveGroup(DSGroup group)
         {
-            string oldGroupName = group.oldTitle;
+            string oldGroupName = group.oldTitle.ToLower();
             List<DSGroup> groupsList = groups[oldGroupName].Groups;
             
             groupsList.Remove(group);

@@ -8,6 +8,7 @@ namespace DS.Winndos
     public class DSEditorWindow : EditorWindow
     {
         private readonly string defaultFileName = "Dialogue File";
+        private TextField fileNameTextField;
         private Button saveButton;
         [MenuItem("Tool/21-ScriptGraph")]
         public static void ShowExample()
@@ -41,8 +42,14 @@ namespace DS.Winndos
             Toolbar toolbar = new Toolbar();
 
             //the TextField include the Call Back Function
-            TextField fileNameTextField = DSElementUtility.CreateTextField(defaultFileName,"File Name:");
-            // fileNameTextField.style.flexDirection = FlexDirection.Column;
+            fileNameTextField = DSElementUtility.CreateTextField(defaultFileName,"File Name:",
+                callback =>
+                {
+                    fileNameTextField.value = callback.newValue.RemoveWhitespaces().RemoveSpecialCharacters();
+                });
+          
+            
+            //fileNameTextField.style.flexDirection = FlexDirection.Column;
             saveButton = DSElementUtility.CreateButton("Save");
             
             toolbar.Add(fileNameTextField);
