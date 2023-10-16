@@ -18,7 +18,7 @@ namespace DS.Utilities
         }
         
         public static Foldout CreateFoldout(string title, bool collapsed = false)
-        {
+        {            
             Foldout foldout = new Foldout()
             {
                 text = title,
@@ -39,12 +39,13 @@ namespace DS.Utilities
         
         
         #region Utility TextField
-        public static TextField CreateTextField(string value = null,
+        public static TextField CreateTextField(string value = null, string label = null,
             EventCallback<ChangeEvent<string>> onValueChanged = null)
         {
             TextField textField = new TextField()
             {
-                value = value
+                value = value,
+                label = label
             };
             if (onValueChanged !=null)
             {
@@ -55,10 +56,10 @@ namespace DS.Utilities
         }
         
         //Dialogue TextField
-        public static TextField CreateTextArea(string value = null,
+        public static TextField CreateTextArea(string value = null, string label = null,
             EventCallback<ChangeEvent<string>> onValueChanged = null)
         {
-            TextField textArea = CreateTextField(value, onValueChanged);
+            TextField textArea = CreateTextField(value,label, onValueChanged);
             textArea.multiline = true;
             return textArea;
         }
@@ -68,4 +69,3 @@ namespace DS.Utilities
         
     }
 }
-

@@ -53,7 +53,7 @@ namespace DS.Elements
         public virtual void Draw()
         {
 
-            TextField dialogueNameTextField = DSElementUtility.CreateTextField(DialogueName,
+            TextField dialogueNameTextField = DSElementUtility.CreateTextField(DialogueName,null,
                 callback =>
                 {
                     if (Group==null)

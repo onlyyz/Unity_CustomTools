@@ -12,7 +12,7 @@ namespace DS.Winndos
     using Elements;
     using Enumerations;
     using Utilities;
-    
+
     public class DSGraphView : GraphView
     {
         private DSEditorWindow editorWindow;
@@ -21,6 +21,33 @@ namespace DS.Winndos
         private SerializableDictionary<String, DSNodeErrorData> ungroupedNodes;
         private SerializableDictionary<String, DSGroupErrorData> groups;
         private SerializableDictionary<Group, SerializableDictionary<String, DSNodeErrorData>> groupNodes;
+
+        private int repeatedNamesAmount;
+
+        public int RepeatedNamesAmount
+        {
+            get
+            {
+                return repeatedNamesAmount;
+            }
+            set
+            {
+                repeatedNamesAmount = value;
+
+                if (repeatedNamesAmount == 0)
+                {
+                    //Enable Save Button
+                    editorWindow.EnableSaving();
+                }
+
+                if (repeatedNamesAmount == 1)
+                {
+                    //Disable Save Button
+                    editorWindow.DisableSaving();
+                }
+            }
+        }
+        
         public DSGraphView(DSEditorWindow dsEditorWindow)
         {
             editorWindow = dsEditorWindow;
@@ -349,6 +376,7 @@ namespace DS.Winndos
 
             if (ungroupedNodesList.Count == 2)
             {
+                ++RepeatedNamesAmount;
                 ungroupedNodesList[0].SetErrorStyle(errorColor);
             }
         }
@@ -363,6 +391,7 @@ namespace DS.Winndos
             node.ResetStyle();
             if (ungroupedNodesList.Count == 1)
             {
+                --RepeatedNamesAmount;
                 ungroupedNodesList[0].ResetStyle();
                 return;
             }
@@ -399,6 +428,7 @@ namespace DS.Winndos
 
             if (groupsList.Count ==2)
             {
+                ++RepeatedNamesAmount;
                 groupsList[0].SetErrorStyle(errorColor);
             }
         }
@@ -432,6 +462,7 @@ namespace DS.Winndos
 
             if (groupedNodeList.Count == 2)
             {
+                ++RepeatedNamesAmount;
                 groupedNodeList[0].SetErrorStyle(errorColor);
             }
         }
@@ -446,6 +477,7 @@ namespace DS.Winndos
 
             if (groupedNodesList.Count ==1)
             {
+                --RepeatedNamesAmount;
                 groupedNodesList[0].ResetStyle();   
                 return;
             }
@@ -471,6 +503,7 @@ namespace DS.Winndos
 
             if (groupsList.Count == 1)
             {
+                --RepeatedNamesAmount;
                 groupsList[0].ResetStyle();
                 return;
             }
