@@ -83,7 +83,10 @@ namespace DS.Elements
 
            
             //Create the Text
-            TextField choiceTextField = DSElementUtility.CreateTextField(choiceData.Text);
+            TextField choiceTextField = DSElementUtility.CreateTextField(choiceData.Text,null,callback =>
+            {
+                choiceData.Text = callback.newValue;
+            });
             choiceTextField.AddClasses
             (
                 "ds-node_textfield",
