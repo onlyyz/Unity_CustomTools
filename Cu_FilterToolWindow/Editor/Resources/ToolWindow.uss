@@ -1,0 +1,26 @@
+/* FilterToolWindow.uss */
+
+#main-container {
+    flex-direction: column;
+    padding: 10px;
+}
+
+#options-container {
+    margin-bottom: 10px;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.button {
+    flex: 1;
+    margin-right: 5px;
+}
+
+.button:active {
+    background-color: yellow; /* 按下时的高光提示颜色 */
+}
+
+/* Add more styling based on your needs */
