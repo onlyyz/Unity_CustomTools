@@ -60,9 +60,9 @@ public class LoadTestTool : OdinEditorWindow
     [Button("加载到所需位置", ButtonSizes.Large, Style = ButtonStyle.Box),]
     public void btnLoadroom()
     {
-        PlayerManager.Self.SetCtrl(false,null);
+        PlayerManager.Self.SetCtrl(false);
         CoreManager.Self.LoadSceneAndLoadPlayerInPoint( dropV3.SceneName,false, dropV3.pos);
-        PlayerManager.Self.SetCtrl(true,null);
+        PlayerManager.Self.SetCtrl(true);
         UnityEngine.Debug.Log("完成 加载指令");
     }
 

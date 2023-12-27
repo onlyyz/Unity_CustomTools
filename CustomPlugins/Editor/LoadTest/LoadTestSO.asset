@@ -39,4 +39,13 @@ MonoBehaviour:
     pos: {x: 250, y: 0, z: 0}
   - roomName: "\u7B2C\u4E8C\u4E2Aboss"
     SceneName: MVP18
-    pos: {x: 0, y: 0, z: 0}
+    pos: {x: 420, y: -12, z: 0}
+  - roomName: "\u79FB\u52A8\u5E73\u53F0"
+    SceneName: MVP26
+    pos: {x: 192, y: 2, z: 0}
+  - roomName: "\u5730\u56FE\u7269\u54C1"
+    SceneName: MVP12
+    pos: {x: 285, y: -25, z: 0}
+  - roomName: "\u623F\u95F411"
+    SceneName: MVP11
+    pos: {x: 240, y: -15, z: 0}

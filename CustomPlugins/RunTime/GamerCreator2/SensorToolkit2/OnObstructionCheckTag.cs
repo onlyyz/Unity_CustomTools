@@ -21,13 +21,12 @@ namespace Micosmo.SensorToolkit.GameCreator {
         [SerializeField]
         public string type;
         [SerializeField] private NeatoTag m_Tag;
-        [SerializeField] public GameObject selfOBJ;
         [SerializeField] public GameObject parentOBJ;
         [SerializeField] public GameObject _lineEffectOBj;
         
         private bool isInstance = false;
         
-        private GlobalNameVariables nameVar;
+        private GameObject thisObj;
         private GameObject _lineEffect;
         
         protected override void WhenDisabled(Trigger trigger, Sensor sensor) {
@@ -42,18 +41,19 @@ namespace Micosmo.SensorToolkit.GameCreator {
         protected override void WhenEnabled(Trigger trigger, Sensor sensor) {
             var raySensor = sensor as IRayCastingSensor;
             if (raySensor == null) return;
+
             
+            thisObj = parentOBJ.GetComponentInChildren<RaySensor>().gameObject;
             
             if (!isInstance)
             {
                 isInstance = true;
-                _lineEffect = selfOBJ.GetComponent<RaySensor>().InstaceEffect(_lineEffectOBj);
-                _lineEffect.GetComponent<LaserControl>().InstanceOBJ(selfOBJ.transform.position ,selfOBJ.GetComponent<RaySensor>().Length * selfOBJ.transform.forward);
-                _lineEffect.transform.parent = selfOBJ.transform.parent;
+                _lineEffect = thisObj.GetComponent<RaySensor>().InstaceEffect(_lineEffectOBj);
+                _lineEffect.GetComponent<LaserControl>().InstanceOBJ(
+                    thisObj.transform.position ,thisObj.GetComponent<RaySensor>().Length * thisObj.transform.forward);
+                _lineEffect.transform.parent = thisObj.transform.parent;
             }
             
-            _lineEffect.SetActive(
-                (bool)parentOBJ.transform.parent.GetComponent<GetGlobalNameData>().NameVar.Get(parentOBJ.name));
             
             raySensor.OnClear.AddListener(OnClear);
             raySensor.OnObstruction.AddListener(OnObstruction);
@@ -61,43 +61,20 @@ namespace Micosmo.SensorToolkit.GameCreator {
 
         void OnObstruction(IRayCastingSensor sensor)
         {
-            if (parentOBJ == null || selfOBJ == null|| _lineEffect ==null)
+            if (parentOBJ == null || thisObj == null|| _lineEffect ==null)
             {
                 Debug.Log(parentOBJ.name + " 挂点OBJ 未赋予 ");
                 return;
             }
             
             RayHit hit = sensor.GetObstructionRayHit();
-            nameVar = parentOBJ.transform.parent.GetComponent<GetGlobalNameData>().NameVar;
-
-            var lineRnder = _lineEffect.GetComponent<LaserControl>();
-                        
-            if (nameVar == null)
-            {
-                Debug.Log(parentOBJ.name + " Global Variables 变量未赋值，请设置" );
-                return ;
-            }
-            if (nameVar.Get(parentOBJ.name) == null)
-            {
-                Debug.Log(parentOBJ.name + " Global Variables 变量不存在，请设置" );
-                return;
-            }
-            if (!(bool)nameVar.Get(parentOBJ.name))
-            {
-                _lineEffect.SetActive(false);
-                return;
-            }
-            else
-            {
-                _lineEffect.SetActive(true);
-            }
-            lineRnder.SetPointPos(selfOBJ.transform.position,hit.Point);
+            var lineRender = _lineEffect.GetComponent<LaserControl>();
+            lineRender.SetPointPos(thisObj.transform.position,hit.Point);
             
-           Debug.Log("回溯");
+            // Debug.Log(hit.Collider.name+ "  回溯");
             if(hit.Collider.gameObject.GetComponent<SignalProxy>().ProxyTarget.HasTag(this.m_Tag))
             {
-                PlayerManager.Self.PlayerReturnLastPoint(type);
-                
+                PlayerManager.Self.PlayerReturnLastPoint();
                 return;
             };
             
@@ -105,8 +82,8 @@ namespace Micosmo.SensorToolkit.GameCreator {
         }
         void OnClear(IRayCastingSensor sensor)
         {
-            _lineEffect.GetComponent<LaserControl>().LoseTarget(selfOBJ.transform,
-                selfOBJ.GetComponent<RaySensor>().Length * selfOBJ.transform.forward);
+            _lineEffect.GetComponent<LaserControl>().LoseTarget(thisObj.transform,
+                thisObj.GetComponent<RaySensor>().Length * thisObj.transform.forward);
             
             _ = m_Trigger.Execute();
         }

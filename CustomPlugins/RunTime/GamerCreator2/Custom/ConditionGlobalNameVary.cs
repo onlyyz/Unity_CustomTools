@@ -20,7 +20,7 @@ public class ConditionGlobalNameVary : Condition
         
     public GlobalNameVariables NameVar;
     [SerializeField] public string type;
-    protected override string Summary => $"判断变量{type}";
+    protected override string Summary => $"判断变量{NameVar.name} {type}";
     // PROPERTIES: ----------------------------------------------------------------------------
 
     protected override bool Run(Args args)

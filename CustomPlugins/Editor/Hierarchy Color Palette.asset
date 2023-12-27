@@ -59,3 +59,18 @@ MonoBehaviour:
     backgroundColor: {r: 0.22272162, g: 0.7264151, b: 0.3118103, a: 1}
     textAlignment: 4
     fontStyle: 0
+  - keyChar: /Last
+    textColor: {r: 1, g: 1, b: 1, a: 1}
+    backgroundColor: {r: 0.078232765, g: 0, b: 1, a: 1}
+    textAlignment: 4
+    fontStyle: 0
+  - keyChar: /Current
+    textColor: {r: 1, g: 1, b: 1, a: 1}
+    backgroundColor: {r: 0, g: 0.6698113, b: 0.31257862, a: 1}
+    textAlignment: 4
+    fontStyle: 0
+  - keyChar: /IsTrigger
+    textColor: {r: 1, g: 0.0141509175, b: 0.0141509175, a: 1}
+    backgroundColor: {r: 0, g: 0, b: 0, a: 1}
+    textAlignment: 4
+    fontStyle: 0

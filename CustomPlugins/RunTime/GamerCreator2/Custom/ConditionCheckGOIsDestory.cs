@@ -18,6 +18,8 @@ public class ConditionCheckGOIsDestory : Condition
     // MEMBERS: -------------------------------------------------------------------------------
         
     [SerializeField] private PropertyGetGameObject m_GameObject = new PropertyGetGameObject();
+    
+    protected override string Summary => $"判断{this.m_GameObject}是否存在";
 
     // PROPERTIES: ----------------------------------------------------------------------------
 

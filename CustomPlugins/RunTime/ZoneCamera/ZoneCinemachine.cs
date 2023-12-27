@@ -1,75 +1,165 @@
 using System;
 using Cinemachine;
-using Micosmo.SensorToolkit;
-using NeatoTags.Core;
 using UnityEngine;
 
 
 namespace CustomPlugins.Zone.Cinemachine
 {
+    using Manager;
+
     [RequireComponent(typeof(Collider))]
     public class ZoneCinemachine : MonoBehaviour
     {
-        public LayerMask TriggerMask;
         public CinemachineVirtualCamera VirtualCamera;
-
         public bool DrawGizmos = true;
+        public bool IsSceneSwitch;
+        [HideInInspector] public bool InTrigger;
 
-        //Zone Camera
-        [HideInInspector] public string nameTag;
-        [HideInInspector] public string GoName;
-
+        static GameObject _target;
         BoxCollider _boxCollider;
         CinemachineConfiner _cinemachineConfiner;
 
+        private string zoneName;
 
-        static string
+        private static string
             _playerLayer = "PlayerController",
-            _m_tag = "Player";
+            _m_tag = "Player",
+            _mGoTag = "SystemTrigger",
+            _mColorTag = "/ZoneCam/",
+            _mVirtualName = "Virtual Camera",
+            _mLast = "/Last",
+            _mCurrent = "/Current",
+            _mIsTrigger = "/IsTrigger";
 
+        #region Initialization
+
+        private void Awake()
+        {
+            Initialization();
+        }
 
         private void OnEnable()
         {
             Initialization();
         }
 
+        private void OnDisable()
+        {
+            transform.name = zoneName;
+        }
+
         protected virtual void Initialization()
         {
-            _boxCollider = null;
             if (VirtualCamera == null)
-                VirtualCamera = GetComponentInChildren<CinemachineVirtualCamera>();
-        }
+                VirtualCamera = GetComponentInChildren<CinemachineVirtualCamera>(true);
 
-        protected virtual void OnTriggerEnter(Collider collider)
-        {
-            if (!collider.gameObject.tag.Equals(_m_tag)) return;
-            ZoneCamEnter(collider);
-        }
-
-        protected virtual void OnTriggerExit(Collider collider)
-        {
-            if (!collider.gameObject.tag.Equals(_m_tag)) return;
-            ZoneCamExit(collider);
-        }
-
-        //TODO:tick the Camera
-        public void ZoneCamEnter(Collider collider)
-        {
-            VirtualCamera.gameObject.SetActive(true);
             VirtualCamera.gameObject.GetComponent<CinemachineVirtualCamera>().enabled = true;
-            VirtualCamera.Follow = collider.gameObject.transform;
-            // transform.name =nameTag+ GoName;
+            VirtualCamera.transform.position = Vector3.zero;
+
+            if (_cinemachineConfiner == null)
+                _cinemachineConfiner = GetComponentInChildren<CinemachineConfiner>(true);
+
+            var getBoxBool = transform.GetChild(0).GetComponent<BoxCollider>() != null;
+            _boxCollider = (getBoxBool ? transform.GetChild(0) : transform.GetChild(1)).GetComponent<BoxCollider>();
+
+
+            gameObject.layer = LayerMask.NameToLayer(_mGoTag);
+            zoneName = transform.name;
         }
 
-        public void ZoneCamExit(Collider collider)
+        #endregion
+
+        #region Area camera
+
+        private void OnTriggerEnter(Collider collider)
         {
+            if (!collider.gameObject.tag.Equals(_m_tag)) return;
+
+            InTrigger = true;
+            RegisterGo(collider.gameObject);
+
+            if (CinemachineManager.Self.inSlowMotion) return;
+
+            SetEnterBlendTime();
+            ZoneCamEnter();
+        }
+
+        public void ZoneCamEnter()
+        {
+            VirtualCamera.name = _mColorTag + _mVirtualName;
+            gameObject.name = _mCurrent + zoneName;
+
+
+            VirtualCamera.gameObject.SetActive(true);
+            VirtualCamera.Follow = _target.transform;
+        }
+
+        private void OnTriggerExit(Collider collider)
+        {
+            if (!collider.gameObject.tag.Equals(_m_tag)) return;
+            InTrigger = false;
+
+            ZoneCamExit();
+            SlowMotionExit();
+        }
+
+        public void ZoneCamExit()
+        {
+            VirtualCamera.name = _mVirtualName;
+            gameObject.name = zoneName;
+            InspectorColor();
+
             VirtualCamera.gameObject.SetActive(false);
             VirtualCamera.Follow = null;
-            // transform.name = GoName ;
+        }
+
+        #endregion
+
+        #region SoomthCamreBlendTime
+
+        void SetEnterBlendTime()
+        {
+            CinemachineManager.Self.SetVirtualCamera(VirtualCamera);
+        }
+
+        #endregion
+
+        #region Slow Motion for Camera
+
+        private void RegisterGo(GameObject target)
+        {
+            _target = target;
+            CinemachineManager.Self.RegisterGo(this.gameObject);
+        }
+
+        public void SlowMotionEnter()
+        {
+            if (!InTrigger) return;
+            // InspectorColor();
+
+
+            VirtualCamera.gameObject.SetActive(true);
+            VirtualCamera.Follow = _target.transform;
+        }
+
+        //121
+        private void SlowMotionExit()
+        {
+            CinemachineManager.Self.GoSwarp();
+            // CinemachineManager.Self.SlowMotionEnd();
+        }
+
+        #endregion
+
+#if UNITY_EDITOR
+
+        private void InspectorColor()
+        {
+            if (InTrigger) gameObject.name = _mIsTrigger + zoneName;
+            // Debug.Log(zoneName + ": " + InTrigger);
         }
 
 
-#if UNITY_EDITOR
         protected virtual void OnDrawGizmos()
         {
             if (!DrawGizmos)
@@ -79,27 +169,17 @@ namespace CustomPlugins.Zone.Cinemachine
 
             if (_boxCollider == null)
             {
-               
-                if (gameObject.transform.GetChild(1).GetComponent<BoxCollider>()!=null)
-                {
-                    _boxCollider = gameObject.transform.GetChild(1).GetComponent<BoxCollider>();
-                }
-                else
-                {
-                    _boxCollider = gameObject.transform.GetChild(0).GetComponent<BoxCollider>();
-                }
-               
+                var getBoxBool = transform.GetChild(0).GetComponent<BoxCollider>() != null;
+                _boxCollider = (getBoxBool ? transform.GetChild(0) : transform.GetChild(1)).GetComponent<BoxCollider>();
             }
 
-            Gizmos.color = new Color(1, 1, 0, 1);
+            Gizmos.color = new Color(1f, 0.3f, 0.75f);
             Gizmos.DrawWireCube(_boxCollider.bounds.center, _boxCollider.bounds.size);
-            // Debug.Log(_boxCollider);
 
-            Gizmos.color = new Color(0, 1, 1, 1);
+            Gizmos.color = Color.blue;
             Gizmos.DrawWireCube(gameObject.GetComponent<BoxCollider>().bounds.center,
                 gameObject.GetComponent<BoxCollider>().bounds.size);
         }
-
 #endif
     }
 }

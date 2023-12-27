@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Cinemachine;
-using MoreMountains.Tools;
-using Unity.Transforms;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -14,6 +11,7 @@ namespace CustomPlugins.Zone
 {
     using SO;
     using Data;
+    using Cinemachine;
     public class ZoneManager : SerializedMonoBehaviour
     {
         public bool isDebug;
@@ -83,8 +81,11 @@ namespace CustomPlugins.Zone
 
                 //TODO:  test the Tag name and the Trigger
                 var zone = father.GetChild(i);
-                var zone3D = zone.GetComponent<MMCinemachineZone3D>();
+                var zone3D = zone.GetComponent<ZoneCinemachine>();
+                zone3D.DrawGizmos = isDebug;
                 GoName = zone.name;
+                
+                
                 // if(isDebug) Debug.Log( " Name： " + GoName);
             
                 //Zone
@@ -244,29 +245,19 @@ namespace CustomPlugins.Zone
         public void ClearSomeData()
         {
             ZoneSetting.DictZoneData.Clear();
-            //Test
+        
             DictZoneData.Clear();
         }
-        public void SaveData()
-        {
-            ZoneSetting.DictZoneData.Clear();
-            foreach (var element in ZoneSetting.DictZoneData)
-            {
-                ZoneSetting.DictZoneData.Add(element.Key, element.Value);
-            }
-            if(isDebug) Debug.Log("写入数据");
-        }
-        
         
 #if UNITY_EDITOR
         public void CreateField()
         {
             var ZoneDataFold = ScriptableObject.CreateInstance<ZoneDataSO>();
 
-            if (!AssetDatabase.IsValidFolder("Assets/CustomPlugins/Resources"))
-                AssetDatabase.CreateFolder("Assets/CustomPlugins/Resources", gameObject.scene.name);
+            if (!AssetDatabase.IsValidFolder("Assets/CustomData/Resources"))
+                AssetDatabase.CreateFolder("Assets/CustomData/Resources", gameObject.scene.name);
 
-            AssetDatabase.CreateAsset(ZoneDataFold, $"Assets/CustomPlugins/Editor/Resources/{"Zone-" + gameObject.scene.name}.asset");
+            AssetDatabase.CreateAsset(ZoneDataFold, $"Assets/CustomData/Editor/Resources/{"区域-" + gameObject.scene.name}.asset");
             AssetDatabase.SaveAssets();
             ZoneSetting = ZoneDataFold;
             if(isDebug) Debug.Log("创建文件：" +gameObject.scene.name);

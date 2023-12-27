@@ -76,7 +76,7 @@ namespace CustomPlugins
             // proper.enabled = false;
             proper.m_Lens.FieldOfView = 30.0f;
         
-            body.m_XDamping = 1.0f;
+            body.m_XDamping = 0.5f;
             body.m_YDamping = 1.0f;
             body.m_ZDamping = 1.0f;
         
@@ -86,7 +86,7 @@ namespace CustomPlugins
         
         
             go.AddComponent<ZoneCinemachine>().VirtualCamera = camera.GetComponent<CinemachineVirtualCamera>();
-            go.GetComponent<ZoneCinemachine>().TriggerMask = LayerMask.GetMask("DefaultController");
+            // go.GetComponent<ZoneCinemachine>().TriggerMask = LayerMask.GetMask("DefaultController");
             camera.transform.parent = go.transform;
         
         

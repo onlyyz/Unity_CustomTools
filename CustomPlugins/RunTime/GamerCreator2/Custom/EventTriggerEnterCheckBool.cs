@@ -1,10 +1,9 @@
 using System;
 using GameCreator.Runtime.Common;
 using UnityEngine;
-
 using GameCreator.Runtime.VisualScripting;
 using Micosmo.SensorToolkit;
-using NeatoTags.Core;
+
 
 [Title("碰撞器触发检查变量")]
 [Category("物理/碰撞器检查变量")]
@@ -18,7 +17,6 @@ using NeatoTags.Core;
 
 public class EventTriggerEnterCheckBool : TEventPhysics
 {
-   public GameObject _gameObject;
    protected override void OnAwake(Trigger trigger)
    {
       base.OnAwake(trigger);
