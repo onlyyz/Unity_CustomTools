@@ -11,7 +11,7 @@ namespace GameCreator.Runtime.VisualScripting
     
     [Title("Set Material Color")]
     [Description("Destroys a game object scene instance")]
-    [Category("渲染/Set Material Color")]
+    [Category("渲染_VFX/Set Material Color")]
     [Parameter("YZ", "YZ")]
     [Keywords("Remove", "Delete", "Flush", "MonoBehaviour", "Behaviour", "Script")]
     [Image(typeof(IconCubeOutline), ColorTheme.Type.Red, typeof(OverlayMinus))]

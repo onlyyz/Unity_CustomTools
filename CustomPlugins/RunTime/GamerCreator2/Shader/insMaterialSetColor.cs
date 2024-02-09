@@ -11,7 +11,7 @@ namespace GameCreator.Runtime.VisualScripting
     
     [Title("bool 选择 材质颜色")]
     [Description("Destroys a game object scene instance")]
-    [Category("渲染/bool 选择 材质颜色")]
+    [Category("渲染_VFX/bool 选择 材质颜色")]
     [Parameter("YZ", "YZ")]
     [Keywords("Remove", "Delete", "Flush", "MonoBehaviour", "Behaviour", "Script")]
     [Image(typeof(IconCubeOutline), ColorTheme.Type.Red, typeof(OverlayMinus))]
@@ -30,14 +30,10 @@ namespace GameCreator.Runtime.VisualScripting
         
         protected override Task Run(Args args)
         {
-            if (this.m_GameObject.Get(args) == null) return DefaultResult;
-            var SelectColor = this.m_bool.Get(args);
-            
-            
             this.m_GameObject.Get(args).GetComponent<Renderer>().material.SetColor
             (
                 this.m_string.Get(args),
-                SelectColor?
+                this.m_bool.Get(args)?
                 this.m_color1.Get(args):
                 this.m_color2.Get(args)
             );

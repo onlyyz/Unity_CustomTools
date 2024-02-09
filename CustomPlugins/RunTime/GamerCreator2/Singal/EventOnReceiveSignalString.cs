@@ -3,9 +3,10 @@ using GameCreator.Runtime.Common;
 using GameCreator.Runtime.Variables;
 using UnityEngine;
 using GameCreator.Runtime.VisualScripting;
+using Sirenix.OdinInspector;
 
-    
-    [Title("接受Signal和比较String")]
+
+[GameCreator.Runtime.Common.Title("接受Signal和比较String")]
     [Category("逻辑/接受Signal和比较String")]
     [Description("Executed when receiving a specific signal name from the dispatcher")]
     [Image(typeof(IconSignal), ColorTheme.Type.Red)]
@@ -16,10 +17,10 @@ using GameCreator.Runtime.VisualScripting;
     [Serializable]
     public class EventOnReceiveSignalString : GameCreator.Runtime.VisualScripting.Event
     {
-        [SerializeField] private Signal m_Signal;
-        public LocalNameVariables NameVar;
-        [SerializeField,GCLabel("Loacl String名")] private string m_string;
-        [SerializeField,GCLabel("Loacl Bool名")] private string m_key;
+        LocalNameVariables NameVar;
+        [SerializeField,LabelText("触发函数")] private Signal m_Signal;
+        [SerializeField,GCLabel("Key 信息")] private string m_string;
+        [SerializeField,GCLabel("本地 bool")] private string m_key;
         protected  override void OnEnable(Trigger trigger)
         {
             base.OnEnable(trigger);
@@ -36,18 +37,19 @@ using GameCreator.Runtime.VisualScripting;
         {
             base.OnReceiveSignalString(trigger, args,isString);
             if (this.m_Signal.Value != args.signal) return;
+            // NameVar = .GetComponent<LocalNameVariables>().
+            
             var boolString = (string)NameVar.Get(m_string);
             
-            // Debug.Log("本地： " + boolString + "  传入： "  + isString);
             
             
             if (!boolString.Equals(isString))
             {
-                NameVar.Set(m_key,false);
+                NameVar.Set((string)NameVar.Get(m_key),false);
                 return;
             }
             
-            NameVar.Set(m_key,true);
+            NameVar.Set((string)NameVar.Get(m_key),true);
             
            
             _ = this.m_Trigger.Execute(args.invoker);

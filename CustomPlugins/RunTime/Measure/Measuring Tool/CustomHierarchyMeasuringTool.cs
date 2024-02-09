@@ -1,10 +1,9 @@
-#if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
-
+#if UNITY_EDITOR
 
 [InitializeOnLoad]
 public class CustomHierarchyMeasuringTool
@@ -46,4 +45,5 @@ public class CustomHierarchyMeasuringTool
    
 
 }
+
 #endif

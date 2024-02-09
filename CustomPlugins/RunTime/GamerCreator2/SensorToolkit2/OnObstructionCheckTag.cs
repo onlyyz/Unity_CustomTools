@@ -18,11 +18,9 @@ namespace Micosmo.SensorToolkit.GameCreator {
     public class OnObstructionCheckTag : TEventSensor
     {
         // PROPERTIES: ----------------------------------------------------------------------------
-        [SerializeField]
-        public string type;
         [SerializeField] private NeatoTag m_Tag;
-        [SerializeField] public GameObject parentOBJ;
-        [SerializeField] public GameObject _lineEffectOBj;
+        [SerializeField,GCLabel("Self")] public GameObject thisGameObject;
+        [SerializeField,GCLabel("特效")] public GameObject _lineEffectOBj;
         
         private bool isInstance = false;
         
@@ -32,7 +30,6 @@ namespace Micosmo.SensorToolkit.GameCreator {
         protected override void WhenDisabled(Trigger trigger, Sensor sensor) {
             var raySensor = sensor as IRayCastingSensor;
             if (raySensor == null) return;
-           
             
             raySensor.OnClear.RemoveListener(OnClear);
             raySensor.OnObstruction.RemoveListener(OnObstruction);
@@ -43,15 +40,15 @@ namespace Micosmo.SensorToolkit.GameCreator {
             if (raySensor == null) return;
 
             
-            thisObj = parentOBJ.GetComponentInChildren<RaySensor>().gameObject;
             
             if (!isInstance)
             {
+                var trans = thisGameObject.transform;
                 isInstance = true;
-                _lineEffect = thisObj.GetComponent<RaySensor>().InstaceEffect(_lineEffectOBj);
+                _lineEffect = thisGameObject.GetComponent<RaySensor>().InstaceEffect(_lineEffectOBj);
                 _lineEffect.GetComponent<LaserControl>().InstanceOBJ(
-                    thisObj.transform.position ,thisObj.GetComponent<RaySensor>().Length * thisObj.transform.forward);
-                _lineEffect.transform.parent = thisObj.transform.parent;
+                    trans.position ,thisGameObject.GetComponent<RaySensor>().Length * trans.forward);
+                _lineEffect.transform.parent = trans.parent;
             }
             
             
@@ -61,11 +58,6 @@ namespace Micosmo.SensorToolkit.GameCreator {
 
         void OnObstruction(IRayCastingSensor sensor)
         {
-            if (parentOBJ == null || thisObj == null|| _lineEffect ==null)
-            {
-                Debug.Log(parentOBJ.name + " 挂点OBJ 未赋予 ");
-                return;
-            }
             
             RayHit hit = sensor.GetObstructionRayHit();
             var lineRender = _lineEffect.GetComponent<LaserControl>();

@@ -24,9 +24,9 @@ namespace CustomPlugins
             sceneScaleTool.yAxis = true;
             sceneScaleTool.zAxis = true;
             sceneScaleTool.showScale = false;
-            sceneScaleTool.sizeType = DistanceType.MeterPoint;
+            // sceneScaleTool.sizeType = DistanceType.MeterPoint;
 
-            sceneScaleTool.scaleObjectScaleColor = Color.white;
+            // sceneScaleTool.scaleObjectScaleColor = Color.white;
         }
 
         #region 区域相机
@@ -120,7 +120,7 @@ namespace CustomPlugins
         
             GameObject NearOcclusionZone = new GameObject("NearOcclusion Zone");
         
-            NearOcclusionZone.AddComponent<ForegroundShelterManager>();
+            NearOcclusionZone.AddComponent<SheltePublisher>();
        
         
             GameObject NearOcclusionBox = new GameObject("NearOcclusion Box");
@@ -137,7 +137,7 @@ namespace CustomPlugins
             Undo.RegisterCreatedObjectUndo(NearOcclusionZone, "Create " + NearOcclusionZone.name);
             Selection.activeObject = NearOcclusionZone;
         
-            NearOcclusionZone.AddComponent<ForegroundShelterManager>();
+            NearOcclusionZone.AddComponent<SheltePublisher>();
       
         
             GameObject NearOcclusionBox = new GameObject("NearOcclusion Box");

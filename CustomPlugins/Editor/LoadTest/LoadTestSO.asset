@@ -22,30 +22,27 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   listSet:
-  - roomName: "\u7B2C1\u5B58\u6863\u70B9"
+  - roomName: "\u5730\u523A\u6D4B\u8BD5"
+    SceneName: ZHO09
+    pos: {x: 170, y: 0, z: 0}
+  - roomName: "\u5341\u5B57\u8DEF\u53E3"
+    SceneName: ZHO20
+    pos: {x: 100, y: -45, z: 0}
+  - roomName: "ZHO14\u6D4B\u8BD5"
+    SceneName: ZHO14
+    pos: {x: 228, y: -37, z: 0}
+  - roomName: "ZHO25\u6D4B\u8BD5"
+    SceneName: ZHO25
+    pos: {x: 220, y: 13, z: 0}
+  - roomName: "\u9501\u95E8\u6218\u6597"
+    SceneName: ZHO07
+    pos: {x: 122, y: 16, z: 0}
+  - roomName: "mvp03\u623F\u95F4\u6D4B\u8BD5"
     SceneName: MVP03
-    pos: {x: 185, y: 12.6, z: 0}
-  - roomName: "\u7B2C\u4E00\u4E2Aboss\u623F\u95F4"
+    pos: {x: 180, y: 15, z: 0}
+  - roomName: "mvp04\u623F\u95F4\u6D4B\u8BD5"
     SceneName: MVP04
-    pos: {x: 203, y: 14, z: 0}
-  - roomName: "\u7B2C2\u623F\u95F4"
-    SceneName: MVP02
-    pos: {x: 137, y: 8, z: 0}
-  - roomName: "\u4E8C\u6BB5\u8DF3\u6D4B\u8BD5"
-    SceneName: MVP13
-    pos: {x: 300, y: -25, z: 0}
-  - roomName: "\u51B2\u523A\u6D4B\u8BD5"
-    SceneName: MVP08
-    pos: {x: 250, y: 0, z: 0}
-  - roomName: "\u7B2C\u4E8C\u4E2Aboss"
-    SceneName: MVP18
-    pos: {x: 420, y: -12, z: 0}
-  - roomName: "\u79FB\u52A8\u5E73\u53F0"
-    SceneName: MVP26
-    pos: {x: 192, y: 2, z: 0}
-  - roomName: "\u5730\u56FE\u7269\u54C1"
-    SceneName: MVP12
-    pos: {x: 285, y: -25, z: 0}
-  - roomName: "\u623F\u95F411"
-    SceneName: MVP11
-    pos: {x: 240, y: -15, z: 0}
+    pos: {x: 195, y: 15, z: 0}
+  - roomName: "\u5B58\u6863\u70B9"
+    SceneName: ZHO08
+    pos: {x: 156.89, y: -7.5, z: 0}

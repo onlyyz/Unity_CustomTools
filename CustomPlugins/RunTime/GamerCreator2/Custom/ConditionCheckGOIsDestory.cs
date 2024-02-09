@@ -7,7 +7,7 @@ using UnityEngine;
 [Title("Attribute Decrease LastTime")]
 [Description("Returns true if the Attribute Change")]
 
-[Category("逻辑/GameObject是否存在")]
+[Category("逻辑/GameObject是否为空")]
 [Parameter("YZ", "YZ")]
 [Keywords("Health", "Mana", "Stamina", "Magic", "Life", "HP", "MP")]
 [Image(typeof(IconAttr), ColorTheme.Type.Blue)]
@@ -19,7 +19,7 @@ public class ConditionCheckGOIsDestory : Condition
         
     [SerializeField] private PropertyGetGameObject m_GameObject = new PropertyGetGameObject();
     
-    protected override string Summary => $"判断{this.m_GameObject}是否存在";
+    protected override string Summary => $"判断{this.m_GameObject}是否为空";
 
     // PROPERTIES: ----------------------------------------------------------------------------
 

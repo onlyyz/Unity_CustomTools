@@ -42,7 +42,8 @@ public class InstructionPlayerInjureReturnControllable : Instruction
         
     protected override Task Run(Args args)
     {
-        // Debug.Log(attackOri + "  " + ((int)ManagerLev+1));
+        
+        Debug.Log(attackOri + "  " + ((int)ManagerLev+1));
         PlayerManager.Self.playerDamager(attackOri.ToString(),(int)ManagerLev+1);
         PlayerManager.Self.PlayerReturnLastPoint();
         return DefaultResult;

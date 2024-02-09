@@ -10,6 +10,8 @@ using System.IO;
 using System.Diagnostics;
 using System.Linq;
 using FilePath = Sirenix.OdinInspector.FilePathAttribute;
+using GameCreator.Runtime.Common;
+using TitleAttribute =Sirenix.OdinInspector.TitleAttribute;
 
 public class LoadTestTool : OdinEditorWindow
 {
@@ -61,7 +63,13 @@ public class LoadTestTool : OdinEditorWindow
     public void btnLoadroom()
     {
         PlayerManager.Self.SetCtrl(false);
-        CoreManager.Self.LoadSceneAndLoadPlayerInPoint( dropV3.SceneName,false, dropV3.pos);
+        CoreManager.Self.LoadSceneAndLoadPlayerInPoint( dropV3.SceneName,false, dropV3.pos,()=>{
+              PlayerManager.Self.AtSceneName = dropV3.SceneName;
+                PlayerManager.Self.OnPlayerChangeRoom?.Invoke(dropV3.SceneName);
+                SignalArgs data = new SignalArgs("OnRoomLoaded", null);
+                Signals.Emit(data,dropV3.SceneName);
+        });
+
         PlayerManager.Self.SetCtrl(true);
         UnityEngine.Debug.Log("完成 加载指令");
     }

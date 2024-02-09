@@ -69,7 +69,7 @@ public class EventEnterAttack : TEventPhysics
          GameObject targetLast = SignalProxy.GetProxyTarget(collider.gameObject);
          if (nullcount >= _gameObjects.Count)
          {
-            this.m_OnOff = false;
+            //this.m_OnOff = false;
             _gameObjects.Clear();
             GetGameObjectLastTriggerEnter.Instance = targetLast;
             _ = this.m_Trigger.Execute(targetLast);

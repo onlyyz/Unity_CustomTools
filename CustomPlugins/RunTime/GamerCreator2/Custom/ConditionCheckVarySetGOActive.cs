@@ -39,7 +39,7 @@ namespace GameCreator.Runtime.VisualScripting
             if (gameObject == null) return DefaultResult;
             if (targetGO == null) return DefaultResult;
             
-            NameVar = gameObject.transform.parent.GetComponent<GetGlobalNameData>().NameVar;
+            // NameVar = gameObject.transform.parent.GetComponent<GetGlobalNameData>().NameVar;
             boolName = this.m_string.Get(args);
             
             

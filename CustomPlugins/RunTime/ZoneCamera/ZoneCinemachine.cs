@@ -1,6 +1,6 @@
-using System;
-using Cinemachine;
 using UnityEngine;
+using System.Collections;
+using Cinemachine;
 
 
 namespace CustomPlugins.Zone.Cinemachine
@@ -10,28 +10,38 @@ namespace CustomPlugins.Zone.Cinemachine
     [RequireComponent(typeof(Collider))]
     public class ZoneCinemachine : MonoBehaviour
     {
+        #region Panel variable
+        
+        [HideInInspector] public bool InTrigger;
+        [HideInInspector] public string zoneName;
+        
+        
         public CinemachineVirtualCamera VirtualCamera;
         public bool DrawGizmos = true;
-        public bool IsSceneSwitch;
-        [HideInInspector] public bool InTrigger;
-
-        static GameObject _target;
+        
         BoxCollider _boxCollider;
         CinemachineConfiner _cinemachineConfiner;
-
-        private string zoneName;
-
-        private static string
+        
+        static GameObject _target;
+        static string
             _playerLayer = "PlayerController",
             _m_tag = "Player",
             _mGoTag = "SystemTrigger",
-            _mColorTag = "/ZoneCam/",
             _mVirtualName = "Virtual Camera",
+          
+            
+            
+            _mColorTag = "/ZoneCam/",
             _mLast = "/Last",
             _mCurrent = "/Current",
             _mIsTrigger = "/IsTrigger";
-
-        #region Initialization
+        
+        #endregion
+        
+        //========================================================================
+        
+        
+        #region 初始化
 
         private void Awake()
         {
@@ -68,97 +78,134 @@ namespace CustomPlugins.Zone.Cinemachine
         }
 
         #endregion
+  
+        
+        //========================================================================
 
-        #region Area camera
+        
+        #region Base Event Function
 
         private void OnTriggerEnter(Collider collider)
         {
-            if (!collider.gameObject.tag.Equals(_m_tag)) return;
-
+            if (!collider.gameObject.tag.Equals(_m_tag)) 
+                return;
             InTrigger = true;
-            RegisterGo(collider.gameObject);
-
-            if (CinemachineManager.Self.inSlowMotion) return;
-
-            SetEnterBlendTime();
-            ZoneCamEnter();
+          
+            CinemachineOnEnter(collider);
         }
-
-        public void ZoneCamEnter()
-        {
-            VirtualCamera.name = _mColorTag + _mVirtualName;
-            gameObject.name = _mCurrent + zoneName;
-
-
-            VirtualCamera.gameObject.SetActive(true);
-            VirtualCamera.Follow = _target.transform;
-        }
-
         private void OnTriggerExit(Collider collider)
         {
-            if (!collider.gameObject.tag.Equals(_m_tag)) return;
+            if (!collider.gameObject.tag.Equals(_m_tag))
+                return;
             InTrigger = false;
-
-            ZoneCamExit();
-            SlowMotionExit();
+            
+            CinemachineOnExit();
         }
-
+        
+        public void ZoneCamEnter()
+        {
+            // Debug.Log("进入");
+            //VirtualCamera.name = _mColorTag + _mVirtualName;
+            //gameObject.name = _mCurrent + zoneName;
+  
+            VirtualCamera.Follow = _target.transform;
+            VirtualCamera.gameObject.SetActive(true);
+            
+        }
         public void ZoneCamExit()
         {
-            VirtualCamera.name = _mVirtualName;
-            gameObject.name = zoneName;
-            InspectorColor();
-
+            // Debug.Log("退出");
+            //VirtualCamera.name = _mVirtualName;
+            //gameObject.name = zoneName;
+            //InspectorColor();
+          
             VirtualCamera.gameObject.SetActive(false);
             VirtualCamera.Follow = null;
         }
-
+        
         #endregion
-
-        #region SoomthCamreBlendTime
-
-        void SetEnterBlendTime()
+        
+        
+        //========================================================================
+        
+        
+        #region Cinemachine Camera
+        
+        private void SetEnterBlendTime()
         {
             CinemachineManager.Self.SetVirtualCamera(VirtualCamera);
         }
+        
+        private void CinemachineOnEnter(Collider collider)
+        {
+            _target = collider.gameObject;
+            
+            if (!CinemachineManager.Self.GetLock())
+            {
+                SetEnterBlendTime();
+                ZoneCamEnter();
+            }
+            // else
+            // {
+            //     ZoneCamExit();
+            // }
+            
+            //锁定相机
+            CinemachineManager.Self.RegisterGo(gameObject);
+            AddSubCameraNum(true);
+        }
 
+        //Get smooth Camera Blend Time
+        private void CinemachineOnExit()
+        {
+            ZoneCamExit();
+            
+            //锁定相机
+            StartCoroutine(DelaySubtractCameraNum());
+        }
+        
+       
+        IEnumerator DelaySubtractCameraNum()
+        {
+            yield return new WaitForSeconds(2.0f);
+            AddSubCameraNum(false);
+            // Debug.Log("后： " +  CameraNum);
+        }
+        #endregion
+        
+
+        //========================================================================
+        
+        
+        #region 相机锁定
+
+        private void AddSubCameraNum(bool addNum)
+        {
+            if(!CinemachineManager.Self.IsLockCamera)
+                        return;
+            if (addNum)
+            {
+                CinemachineManager.Self.AddBorderCrossings();
+            }
+            else
+            {
+                CinemachineManager.Self.SubBorderCrossings();
+            }
+            CinemachineManager.Self.SwitchCameraLock();
+        }
+        
         #endregion
 
-        #region Slow Motion for Camera
+        
+        //========================================================================
 
-        private void RegisterGo(GameObject target)
-        {
-            _target = target;
-            CinemachineManager.Self.RegisterGo(this.gameObject);
-        }
-
-        public void SlowMotionEnter()
-        {
-            if (!InTrigger) return;
-            // InspectorColor();
-
-
-            VirtualCamera.gameObject.SetActive(true);
-            VirtualCamera.Follow = _target.transform;
-        }
-
-        //121
-        private void SlowMotionExit()
-        {
-            CinemachineManager.Self.GoSwarp();
-            // CinemachineManager.Self.SlowMotionEnd();
-        }
-
-        #endregion
-
+        
 #if UNITY_EDITOR
-
         private void InspectorColor()
         {
             if (InTrigger) gameObject.name = _mIsTrigger + zoneName;
             // Debug.Log(zoneName + ": " + InTrigger);
         }
-
 
         protected virtual void OnDrawGizmos()
         {

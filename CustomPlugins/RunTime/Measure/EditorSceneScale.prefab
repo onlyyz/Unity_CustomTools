@@ -76,14 +76,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 857dfd8cedebe4c3592acd88eeae99f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CamDistance: 0
-  worldType: 0
-  scaleSize: 10
-  unit: 1
+  worldType: 1
+  scaleSize: 500
+  unit: 10
   xAxis: 1
   yAxis: 1
-  zAxis: 0
+  zAxis: 1
   showScale: 1
+  scalingObject: {fileID: 6250563658126901830}
+  useScaleingObject: 1
   scaleObjectScaleColor: {r: 1, g: 0, b: 1, a: 1}
   sizeType: 2
   textStyle:
@@ -91,7 +92,7 @@ MonoBehaviour:
     m_Normal:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+      m_TextColor: {r: 0, g: 1, b: 0.98401666, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
@@ -141,7 +142,7 @@ MonoBehaviour:
       m_Top: 0
       m_Bottom: 0
     m_Font: {fileID: 0}
-    m_FontSize: 0
+    m_FontSize: 9
     m_FontStyle: 0
     m_Alignment: 0
     m_WordWrap: 0

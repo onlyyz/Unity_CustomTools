@@ -16,12 +16,13 @@ namespace CustomPlugins.Manager
 
     public class CinemachineManager : ManagerBase<CinemachineManager>
     {
-      
+        [SerializeField, LabelText("是否有锁定相机")] public bool IsLockCamera;
 #if UNITY_EDITOR
+
         #region TextButton
         [SerializeField, LabelText("Debug调试")] public bool IsDebug;
-        [SerializeField, LabelText("相机锁定调试")] public bool IsLock;
-        
+        [SerializeField, LabelText("Drew调试")] public bool IsDrew;
+
         [Button("保存数据"), ButtonGroup]
         public void SaveSelfData()
         {
@@ -41,25 +42,30 @@ namespace CustomPlugins.Manager
         [Button("启用限制"), ButtonGroup]
         public void ShowValue1()
         {
-            SlowMotionBegin();
+            CameraLockEnter();
+            InCameraLockState = true;
         }
 
         [Button("取消限制"), ButtonGroup]
         public void ShowValue2()
         {
-            SlowMotionEnd();
+            CameraLockExit();
+            InCameraLockState = false;
         }
-        [Button("Debug"), ButtonGroup]
-        public void ShowValue3()
-        {
-            Debug.Log(ZoneCinemachine.gameObject.name);
-        }
+
+
         #endregion
+
 #endif
+        //========================================================================
+        
+        
         #region Panel variable
         [SerializeField, LabelText("参数存档")] public CinemachineManagerSO CinemachineManagerData;
-        [SerializeField, LabelText("相机参数")] public CameraParameter m_CameraParameter;
+        
         [SerializeField, LabelText("曲线覆盖")] public CinemachineBlendDefinition m_Blend;
+        [SerializeField, LabelText("相机参数")] public CameraParameter m_CameraParameter;
+      
 
         public struct CameraParameter
         {
@@ -102,9 +108,14 @@ namespace CustomPlugins.Manager
 
         #endregion
 
+        //========================================================================
+        
+        string currentSence, lastSecne;
+        CinemachineBrain m_brain;
         CinemachineVirtualCamera LastCamera;
         CinemachineVirtualCamera CurrentCamera;
-        CinemachineBrain m_brain;
+
+        //========================================================================
 
         #region Initialization
 
@@ -123,20 +134,25 @@ namespace CustomPlugins.Manager
             if (m_brain == null)
                 m_brain = gameObject.GetComponent<CinemachineBrain>();
 
-            // CinemachineCore.GetBlendOverride = BlendOverrideHandler;
+            CinemachineCore.GetBlendOverride = BlendOverrideHandler;
 
-            m_Blend.m_Time = 1.5f;
-            
-                m_brain.m_DefaultBlend = m_Blend;
-            initSLowMotion();
+            m_brain.m_DefaultBlend = m_Blend;
 
-            if (CamLock.slowMotionGo == null)
+
+            if (CamLock.LockGo == null)
             {
-                CamLock.slowMotionGo = transform.parent.GetComponent<ZoneCinemachine>().gameObject;
+                Debug.Log("相机锁定部件丢失");
+                CamLock.LockGo = transform.parent.GetComponent<ZoneCinemachine>().gameObject;
             }
+
+            // m_brain.m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.EaseInOut;
+            // m_Blend.m_Time = 1.5f;
+
+
+            InitSmoothTime();
+            InitLockCamera();
         }
-
-
+        
         CinemachineBlendDefinition BlendOverrideHandler(
             ICinemachineCamera fromVcam, ICinemachineCamera toVcam,
             CinemachineBlendDefinition defaultBlend,
@@ -144,23 +160,58 @@ namespace CustomPlugins.Manager
         {
             // Make this decision depending on whatever internal criteria you have
             var customBlend = defaultBlend;
-            customBlend.m_Style = CinemachineBlendDefinition.Style.EaseInOut;
+            customBlend.m_Style = m_Blend.m_Style;
             return customBlend;
-            
         }
 
         #endregion
 
+        #region Switch Scene
+
+        private IEnumerator InvokeCameraMode()
+        {
+            yield return new WaitForEndOfFrame();
+            m_brain.m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;
+        }
+
+        #endregion
+
+        //========================================================================
+
+
         #region Calculated smoothing time
 
+        void InitSmoothTime()
+        {
+            currentSence = Self.gameObject.scene.name;
+            lastSecne = currentSence;
+        }
+        
         //计算距离 时间
-
+        //场景缓冲
         public void SetVirtualCamera(CinemachineVirtualCamera cam)
         {
+            //切换场景 
+            lastSecne = currentSence;
+            currentSence = cam.gameObject.scene.name;
+
+            m_Blend.m_Style = (currentSence.Equals(lastSecne))
+                ? CinemachineBlendDefinition.Style.Custom
+                : CinemachineBlendDefinition.Style.Cut;
+
+                // m_brain.m_DefaultBlend.m_Style = m_Blend.m_Style;
+                // m_brain.m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;
+            
+
+            // Debug.Log(lastSecne + "   " + currentSence );
+            // Debug.Log("相机切换：" +  m_brain.m_DefaultBlend.m_Style + " " +  m_brain.m_DefaultBlend.m_Time);
+            //计算速度
             LastCamera = CurrentCamera;
             CurrentCamera = cam;
             if (LastCamera == null)
                 return;
+
+
             camSwitching();
         }
 
@@ -179,7 +230,7 @@ namespace CustomPlugins.Manager
             if (MathDistance() == 0 || MathDistance() <= m_CameraParameter.closeThreshold)
             {
                 m_brain.m_DefaultBlend.m_Time = m_CameraParameter.zeroTime;
-                Debug.Log("距离：" + MathDistance() + "  时间: " + m_CameraParameter.zeroTime);
+                // Debug.Log("距离：" + MathDistance() + "  时间: " + m_CameraParameter.zeroTime);
                 return;
             }
 
@@ -225,216 +276,226 @@ namespace CustomPlugins.Manager
             Debug.Log(distance + "距离：" + MathDistance() + "  " + mode + ": " + m_brain.m_DefaultBlend.m_Time);
         }
 #endif
+
         #endregion
+
+
+        //========================================================================
+
 
         #region Camera Lock
 
-        [SerializeField, LabelText("相机锁定")] 
-        private CameraLock CamLock;
-
-        private ZoneCinemachine SlowCinemachine;
-        private ZoneCinemachine ZoneCinemachine;
-        private ZoneCinemachine LastZoneCinemachine;
-        [HideInInspector] public bool inSlowMotion;
-        [HideInInspector] public bool CanSlowMotion = true;
-        [HideInInspector] public bool ExitSlowMotion = false;
-        [HideInInspector] public int InZone;
-        
-       
-        
+        [SerializeField, LabelText("相机锁定")] public CameraLock CamLock;
         public struct CameraLock
         {
-            [LabelText("相机锁定退出距离阈值")]
-            [Range(3.0f, 12.0f)] public float SlowMitonThresholdDistance;
-            public GameObject slowMotionGo;
-        }
-        
-        private void initSLowMotion()
-        {
-            CanSlowMotion = true;
-            inSlowMotion = false;
-            ExitSlowMotion = false;
-        }
+            [LabelText("自动解锁距离阈值")] [Range(2.0f, 12.0f)]
+            public float SlowMitonThresholdDistance;
 
-        public void RegisterGo(GameObject ZonCam)
-        {
-            //121
-            if (ZoneCinemachine != null)
-            {
-                LastZoneCinemachine = ZoneCinemachine;
-            }
-            //101
-            SetBlendEnter();
-          
-            
-            ZoneCinemachine = ZonCam.GetComponent<ZoneCinemachine>();
-            SlowCinemachine = CamLock.slowMotionGo.GetComponent<ZoneCinemachine>();
-        }
-        
-        // 121
-        public void GoSwarp()
-        {
-            //101
-            --InZone;
-            
-            if(LastZoneCinemachine == null) return;
-            if (ZoneCinemachine.VirtualCamera.gameObject.activeInHierarchy) return;
-            if (LastZoneCinemachine.VirtualCamera.gameObject.activeInHierarchy)
-            {
-                ZoneCinemachine = LastZoneCinemachine;
-            }
-        }
-     
-        //101
-        private void SetBlendEnter()
-        {
-            var style = (++InZone == 1 && ExitSlowMotion);
-
-            m_brain.m_DefaultBlend.m_Style =
-                style ? CinemachineBlendDefinition.Style.Cut : CinemachineBlendDefinition.Style.EaseInOut;
-
-            ExitSlowMotion = false;
-        }
-        
-        public void SlowMotionBegin()
-        {
-            SlowMotionBeginSet();
-        }
-
-        private void SlowMotionBeginSet()
-        {
-            //锁定区域，进入其他触发区域，保留限制条件2
-            if (!CanSlowMotion) return;
-            if (inSlowMotion) return;
-            CanSlowMotion = false;
-            inSlowMotion = true;
-            //101
-            ExitSlowMotion = true;
-            
-#if UNITY_EDITOR
-            if(IsLock) Debug.Log("镜头锁定： ");
-#endif
-            CamLock.slowMotionGo.transform.position = Self.transform.position;
-
-            SetBlendTime();
-            // SetSlowCameraPos(true);
-            SlowCinemachine.ZoneCamEnter();
-            ZoneCinemachine.ZoneCamExit();
+            [LabelText("自动解锁等待时间")] [Range(2.0f, 5.0f)]
+            public float cameraWaitTimeForAutounlocking;
+            public GameObject LockGo;
         }
 
         
+        //正在解锁
+        bool unlocking;
+        bool InCameraLockState;
+        bool LockableAfterWaitingTime;
         
-        public void SlowMotionEnd()
-        {
-            if (!inSlowMotion) return;
-            m_brain.m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.EaseInOut;
-            SetBlendTime();
-            
-#if UNITY_EDITOR
-            if(IsLock) Debug.Log("镜头解锁： ");
-#endif
-            
-         
-            
-            //121
-            if(LastZoneCinemachine != null)
-            {
-                LastZoneCinemachine.SlowMotionEnter();
-            }
-            ZoneCinemachine.SlowMotionEnter();
-           
-            //101 Lerp And Only
-          
-            SlowCinemachine.ZoneCamExit();
-            // StartCoroutine(SlowMotionExitLerpCurrenCamera());
-            
-            
-            
-            Invoke("SlowMotionFlag", 1.75f);
-            inSlowMotion = false;
-            
-           
-        }
+        int BorderCrossings;
         
-        
-        private void SlowMotionFlag()
-        {
-            CanSlowMotion = true;
-        }
-        
-        // private void Update()
-        // {
-        //     Debug.Log(m_brain.ActiveBlend);
-        //     Debug.Log(m_brain.IsBlending);
-        // }
+        Coroutine timerCoroutine;
+        ZoneCinemachine LockGoCinemachine;
+        ZoneCinemachine CurrentZoneCinemachine;
+        ZoneCinemachine LastZoneCinemachine;
 
-        //101 Only
-        IEnumerator SlowMotionExitLerpCurrenCamera()
+
+        #region 初始化与获取
+
+        public CinemachineVirtualCamera GetirtualCamera()
         {
-            while (m_brain.IsBlending)
-            {
-                yield return null;
-            }
-            m_brain.m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;
+            return CurrentZoneCinemachine.VirtualCamera;
         }
-        
-        
-        private void SetBlendTime()
+        public bool GetLock()
         {
-            m_brain.m_DefaultBlend.m_Time = 1.5f;
+            return InCameraLockState;
         }
 
-        public bool GetIsSlowMotion()
+        public void AddBorderCrossings()
         {
-            return inSlowMotion;
+            BorderCrossings++;
         }
-
-        public float GetCameraDistanceThea()
+        public void SubBorderCrossings()
         {
-            return CamLock.SlowMitonThresholdDistance;
+            BorderCrossings--;
+        }
+        
+        void InitLockCamera()
+        {
+            LockGoCinemachine = CamLock.LockGo.GetComponent<ZoneCinemachine>();
         }
         
         #endregion
+        
+        public void RegisterGo(GameObject ZonCam)
+        {
+            //121
+            if(CurrentZoneCinemachine!=null  && ZonCam.name.Equals(CurrentZoneCinemachine.name) )
+                return;
+            
+            LastZoneCinemachine = CurrentZoneCinemachine;
+            CurrentZoneCinemachine = ZonCam.GetComponent<ZoneCinemachine>();
+            // Debug.Log("ZonCam: " + ZonCam.name);
+        }
+        
+        
+        
+        public void SwitchCameraLock()
+        {
+            if (BorderCrossings >= 3)
+            {
+                if (InCameraLockState)
+                    return;
+               
+                CameraLockEnter();
+                InCameraLockState = true;
+            }
+            // else
+            // {
+            //     if (!cameraLock && !CinemachineManager.Self.GetLock())
+            //         return;
+            //     
+            //     Debug.Log("相机退出");
+            //     CinemachineManager.Self.CameraLockExit();
+            //     cameraLock = false;
+            // }
+        }
+        
+
+        private void CameraLockEnter()
+        {
+            //是否锁定相机
+            // if(!LockableAfterWaitingTime)
+            //     return;
+            // LockableAfterWaitingTime = false;
+            
+            Debug.Log("相机锁定");
+            LockEnter();
+            
+            //未解锁
+            if (!unlocking)
+            {
+                if (timerCoroutine != null)
+                    StopCoroutine(timerCoroutine);
+                timerCoroutine = StartCoroutine(MathCameraAndPlayDistance());
+            }
+            
+        }
+
+        private void CameraLockExit()
+        {
+            if (CurrentZoneCinemachine.InTrigger)
+            {
+                SetVirtualCamera(CurrentZoneCinemachine.VirtualCamera);
+                CurrentZoneCinemachine.ZoneCamEnter();
+                
+                
+                // Debug.Log("解锁 " + CurrentZoneCinemachine.name);
+            }
+            else
+            {
+                SetVirtualCamera(LastZoneCinemachine.VirtualCamera);
+                LastZoneCinemachine.ZoneCamEnter();
+                
+                
+                // Debug.Log("解锁 " + LastZoneCinemachine.name);
+            }
+            
+            //解锁完成
+            LockExit();
+            unlocking = false;
+            InCameraLockState = false;
+            //3S 后可以再次锁定
+            StartCoroutine(WaitTimeForAgainCanLockCamera());
+        }
+
+        private void LockEnter()
+        {
+            LockGoCinemachine.transform.position = Self.transform.position;
+            LockGoCinemachine.ZoneCamEnter();
+        }
+
+        private void LockExit()
+        {
+            LockGoCinemachine.ZoneCamExit();
+        }
+
+
+        IEnumerator MathCameraAndPlayDistance()
+        {
+            //正在解锁
+            unlocking = true;
+            
+            float timeout = Time.time + CamLock.cameraWaitTimeForAutounlocking;
+            while (Time.time < timeout)
+            {
+                // Debug.Log(GetCameraAndPlayDistance() > CamLock.SlowMitonThresholdDistance);
+                // Debug.Log("距离：" +  GetCameraAndPlayDistance());
+                if (GetCameraAndPlayDistance() > CamLock.SlowMitonThresholdDistance)
+                {
+                    Debug.Log("距离解锁");
+                    CameraLockExit();
+                    yield break;
+                }
+
+                yield return null;
+            }
+
+            Debug.Log(CamLock.cameraWaitTimeForAutounlocking + "秒已过，自动解锁");
+            if (InCameraLockState)
+                CameraLockExit();
+        }
+
+        IEnumerator WaitTimeForAgainCanLockCamera()
+        {
+            // 等待三秒
+            yield return new WaitForSeconds(3.0f);
+            LockableAfterWaitingTime = true;
+        }
+       
+        
+        private float GetCameraAndPlayDistance()
+        {
+            return (float)
+            (
+                math.abs(Math.Round(
+                    Vector2.Distance(PlayerManager.Self.GetPlayer().transform.position, Self.transform.position)
+                    , 2))
+            );
+        }
+
+        #endregion
+
+
+        //========================================================================
+
 
 #if UNITY_EDITOR
+
         #region Editor
 
         private void SaveData()
         {
-            CinemachineManagerData.m_nearCamMode = m_CameraParameter.m_nearCamMode;
-            CinemachineManagerData.camNearValue = m_CameraParameter.camNearValue;
-            CinemachineManagerData.nearThreshold = m_CameraParameter.nearThreshold;
-            //
-            CinemachineManagerData.m_MiddleCamMode = m_CameraParameter.m_MiddleCamMode;
-            CinemachineManagerData.camMiddleValue = m_CameraParameter.camMiddleValue;
-            //
-            CinemachineManagerData.m_farCamMode = m_CameraParameter.m_farCamMode;
-            CinemachineManagerData.camFarValue = m_CameraParameter.camFarValue;
-            CinemachineManagerData.distanceThreshold = m_CameraParameter.distanceThreshold;
-            //
+            CinemachineManagerData.m_CameraParameter = m_CameraParameter;
             CinemachineManagerData.m_Blend = m_Blend;
-            //
-            CinemachineManagerData.zeroTime = m_CameraParameter.zeroTime;
-            CinemachineManagerData.closeThreshold = m_CameraParameter.closeThreshold;
+            CinemachineManagerData.CamLock = CamLock;
         }
 
         private void GetData()
         {
-            m_CameraParameter.m_nearCamMode = CinemachineManagerData.m_nearCamMode;
-            m_CameraParameter.camNearValue = CinemachineManagerData.camNearValue;
-            m_CameraParameter.nearThreshold = CinemachineManagerData.nearThreshold;
-            //
-            m_CameraParameter.m_MiddleCamMode = CinemachineManagerData.m_MiddleCamMode;
-            m_CameraParameter.camMiddleValue = CinemachineManagerData.camMiddleValue;
-            //
-            m_CameraParameter.m_farCamMode = CinemachineManagerData.m_farCamMode;
-            m_CameraParameter.camFarValue = CinemachineManagerData.camFarValue;
-            m_CameraParameter.distanceThreshold = CinemachineManagerData.distanceThreshold;
-            //
+            m_CameraParameter = CinemachineManagerData.m_CameraParameter;
             m_Blend = CinemachineManagerData.m_Blend;
-            //
-            m_CameraParameter.zeroTime = CinemachineManagerData.zeroTime;
-            m_CameraParameter.closeThreshold = CinemachineManagerData.closeThreshold;
+            CamLock = CinemachineManagerData.CamLock;
         }
 
         private void CreateField()
@@ -450,7 +511,29 @@ namespace CustomPlugins.Manager
             // if(isDebug) Debug.Log("创建文件：" +gameObject.scene.name);
         }
 
+        protected virtual void OnDrawGizmos()
+        {
+            if(!IsDrew) return;
+            // 查找场景中第一个带有特定脚本的物体
+            PlayerManager foundObject = GameObject.FindObjectOfType<PlayerManager>();
+            Vector3 Pos;
+            // 检查是否找到物体
+            if (foundObject != null)
+            {
+                 Pos = foundObject.GetPlayer().transform.position;
+            }
+            else
+            {
+                return;
+            }
+           
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(Pos,CamLock.SlowMitonThresholdDistance);
+        }
+        
+        
         #endregion
+
 #endif
     }
 }

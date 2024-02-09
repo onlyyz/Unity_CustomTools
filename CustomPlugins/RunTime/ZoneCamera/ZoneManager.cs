@@ -124,6 +124,10 @@ namespace CustomPlugins.Zone
                 ZoneSetting.DictZoneData.Add(GoName, zoneData);
                 //Test
                 DictZoneData.Add(GoName, zoneData);
+                
+                
+                zone3D.VirtualCamera.gameObject.SetActive(zone3D.InTrigger);
+                
             }
         }
 

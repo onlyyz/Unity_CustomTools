@@ -1,11 +1,9 @@
-#if UNITY_EDITOR
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
 using Unity.Mathematics;
-using UnityEditor;
-using UnityEditor.Searcher;
+
+#if UNITY_EDITOR
+    using UnityEditor;
+#endif
+
 using UnityEngine;
 using Color = UnityEngine.Color;
 
@@ -38,11 +36,11 @@ public  class EditorSceneScaleTool : MonoBehaviour
     public float CamDistance;
     [SerializeField] WorldType worldType; // see enum
     
-    // [Header("覆盖范围"),Tooltip("地圖範圍")]
-    [HideInInspector]
+   [Header("覆盖范围"),Tooltip("地圖範圍")]
+    //[HideInInspector]
     [SerializeField] int scaleSize = 10; // scale size
 
-    // [Range(1, 200),Tooltip("間隔")]
+    //[Range(1, 200),Tooltip("間隔")]
     [HideInInspector]
     [SerializeField] int unit = 1; // Show scale per Unit
 
@@ -50,7 +48,7 @@ public  class EditorSceneScaleTool : MonoBehaviour
     public bool xAxis = false; // enable or disable axis
     [Tooltip("显示Y轴")]
     public bool yAxis = false; // enable or disable axis
-    // [Tooltip("显示Z轴")]
+    //[Tooltip("显示Z轴")]
     [HideInInspector]
     public bool zAxis = false; // enable or disable axis
     
@@ -75,8 +73,11 @@ public  class EditorSceneScaleTool : MonoBehaviour
     /// </summary>
     public void OnDrawGizmos()
     {
-        
+#if UNITY_EDITOR
+
         SVCam = SceneView.lastActiveSceneView.camera;
+                
+#endif
         nearPos = new Vector3[4];
         farPos = new Vector3[4];
 
@@ -96,6 +97,7 @@ public  class EditorSceneScaleTool : MonoBehaviour
         
         CamDistance =new Vector3(0.0f,SVCam.transform.position.z,0.0f).magnitude;
         // CamDistance = Vector3.Distance(currenPos,transform.position);
+        //Debug.Log(CamDistance);
         //计算绘制数量
 
         setUnit();
@@ -106,7 +108,7 @@ public  class EditorSceneScaleTool : MonoBehaviour
         
         XAxisLine();
         YAxisLine();
-        // ZAxisLine();
+        //ZAxisLine();
         
         
     }
@@ -307,47 +309,49 @@ public  class EditorSceneScaleTool : MonoBehaviour
         //     }
         // }
         
-        //Left
-        Gizmos.color = Color.blue;
-        var amendX1 = (math.floor(farPos[0].x/unit) * unit);
-        var start0 = new Vector3(amendX1,(Mathf.Floor(farPos[0].y/unit) + 1)* unit,     farPos[0].z);
-        var start2 = new Vector3(amendX1,(Mathf.Ceil(farPos[2].y/unit) - 1)* (unit),    farPos[2].z);
-       
-        //Right
-        var amendX2 = (math.ceil(farPos[1].x/ unit) * unit);
-        var start1 = new Vector3(amendX2,farPos[1].y,farPos[1].z);
-        var start3 = new Vector3(amendX2,farPos[3].y,farPos[3].z);
-       
-        
-        Gizmos.DrawLine(start0, start2);
-        // Gizmos.DrawLine(start1, start3);
-        
-        //Camera Distance
-        var HorizontalDistance =  math.abs(start0.x- start1.x);
-        var verticalDistance =  math.abs(start0.y- start2.y);
-       
-        for (int i = 0; i < Mathf.FloorToInt(HorizontalDistance/unit); i++)
+        if (yAxis)
         {
-            start0 += new Vector3(unit , 0, 0);
-            start2 += new Vector3(unit , 0, 0);
-            var startPos =new Vector3(start0.x, 0, 0);
-            // start2 += new Vector3(unit , 0, 0);
-            // if(sizeType != DistanceType.MeterPoint)
-            
-            if(sizeType != DistanceType.MeterPoint)
-                Gizmos.DrawLine(start0, start2);
-           
-            
-            
-            // Line(Vector3.up, Vector3.down, startPos + new Vector3(i * unit,0,0));
-            // LineScaleLabel(Vector3.up, Vector3.down, startPos + new Vector3(i * unit,0,0));
+            //Left
+            Gizmos.color = Color.blue;
+            var amendX1 = (math.floor(farPos[0].x / unit) * unit);
+            var start0 = new Vector3(amendX1, (Mathf.Floor(farPos[0].y / unit) + 1) * unit, farPos[0].z);
+            var start2 = new Vector3(amendX1, (Mathf.Ceil(farPos[2].y / unit) - 1) * (unit), farPos[2].z);
 
-            
-            LineScaleLabel(start0, start1);
-            // Label(start0, "Test");
-            // Meter(Vector3.up, Vector3.down, Vector3.zero);
+            //Right
+            var amendX2 = (math.ceil(farPos[1].x / unit) * unit);
+            var start1 = new Vector3(amendX2, farPos[1].y, farPos[1].z);
+            var start3 = new Vector3(amendX2, farPos[3].y, farPos[3].z);
+
+
+            Gizmos.DrawLine(start0, start2);
+            // Gizmos.DrawLine(start1, start3);
+
+            //Camera Distance
+            var HorizontalDistance = math.abs(start0.x - start1.x);
+            var verticalDistance = math.abs(start0.y - start2.y);
+
+            for (int i = 0; i < Mathf.FloorToInt(HorizontalDistance / unit); i++)
+            {
+                start0 += new Vector3(unit, 0, 0);
+                start2 += new Vector3(unit, 0, 0);
+                var startPos = new Vector3(start0.x, 0, 0);
+                // start2 += new Vector3(unit , 0, 0);
+                // if(sizeType != DistanceType.MeterPoint)
+
+                if (sizeType != DistanceType.MeterPoint)
+                    Gizmos.DrawLine(start0, start2);
+
+
+
+                // Line(Vector3.up, Vector3.down, startPos + new Vector3(i * unit,0,0));
+                // LineScaleLabel(Vector3.up, Vector3.down, startPos + new Vector3(i * unit,0,0));
+
+
+                LineScaleLabel(start0, start1);
+                // Label(start0, "Test");
+                // Meter(Vector3.up, Vector3.down, Vector3.zero);
+            }
         }
-        
 
     }
     
@@ -400,6 +404,7 @@ public  class EditorSceneScaleTool : MonoBehaviour
         return;
         
     }
+    /*
     private void Meter(Vector3 v1, Vector3 v2, Vector3 start)
     {
         for (int i = 0; i <= scaleSize; i+=(1* unit))
@@ -408,17 +413,19 @@ public  class EditorSceneScaleTool : MonoBehaviour
             Label(start + v2 * i, "( "+ start.x +", " + (-i)+ " )" );
         }
     }
-    
+    */
     private void Meter(Vector3 v1,  Vector3 v2)
     {
         var start = v1 - new Vector3(0.0f, v1.y, 0.0f);
         Vector3 dir = (v1 - start).normalized;
         var distance = Mathf.Abs(v1.x - v2.x);
+        dir.y = Mathf.Abs(dir.y);
+        //Debug.Log(dir);
         
         for (int i = 0; i <= distance; i+=(1* unit))
         {
-            Label(start + dir * i, "( "+start.x +", " + i + " )");
-            Label(start + (-dir) * i, "( "+ start.x +", " + (-i)+ " )" );
+            Label(start + dir * i, "( "+start.x +", " + i + " ) )" );
+            Label(start + (-dir) * i, "( "+ start.x +", " + (-i)+ " )");
         }
     }
     private void LineMeterAll(Vector3 v1, Vector3 v2, Vector3 start)
@@ -458,9 +465,13 @@ public  class EditorSceneScaleTool : MonoBehaviour
         //裁剪空间
         // float4 proPos = SVCam.projectionMatrix * camPos;
         // Debug.Log(GL.GetGPUProjectionMatrix(SVCam.projectionMatrix, false) * new Vector4(point.x,point.y,point.z, 1.0f));
-      
+#if UNITY_EDITOR
+        
+
         Handles.Label(point, "▪", gUI);
         Handles.Label(point, "   "+str.ToString(), textStyle);
+        
+#endif
     }
 
 
@@ -507,5 +518,3 @@ public  class EditorSceneScaleTool : MonoBehaviour
 
 #endif
 }
-
-#endif
